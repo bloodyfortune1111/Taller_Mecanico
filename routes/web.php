@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 // Importa tus controladores
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\VehiculoController;
@@ -45,6 +46,28 @@ Route::middleware('auth')->group(function () {
 
     // Rutas de recursos para Ordenes de Servicio
     Route::resource('ordenes-servicio', OrdenServicioController::class);
+    
+    // Ruta de prueba para depurar eliminación
+    Route::get('/debug-delete/{id}', function($id) {
+        Log::info('=== RUTA DE PRUEBA DEBUG DELETE ===');
+        Log::info('ID recibido: ' . $id);
+        
+        $orden = \App\Models\OrdenServicio::find($id);
+        if (!$orden) {
+            Log::error('Orden no encontrada con ID: ' . $id);
+            return 'Orden no encontrada';
+        }
+        
+        try {
+            Log::info('Intentando eliminar orden desde ruta debug...');
+            $orden->delete();
+            Log::info('Orden eliminada exitosamente desde ruta debug');
+            return 'Orden eliminada exitosamente';
+        } catch (\Exception $e) {
+            Log::error('Error en ruta debug: ' . $e->getMessage());
+            return 'Error: ' . $e->getMessage();
+        }
+    })->name('debug.delete');
 });
 
 // Rutas para administración, protegidas por autenticación y rol de admin

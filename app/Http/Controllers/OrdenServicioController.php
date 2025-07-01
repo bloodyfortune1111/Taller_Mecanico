@@ -7,14 +7,21 @@ use App\Models\Cliente;
 use App\Models\Vehiculo;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrdenServicioController extends Controller
 {
+    public function __construct()
+    {
+        Log::info('OrdenServicioController constructor ejecutado');
+    }
+
     /**
      * Muestra una lista de las órdenes de servicio.
      */
     public function index()
     {
+        Log::info('Método index de OrdenServicioController ejecutado');
         $ordenesServicio = OrdenServicio::with(['cliente', 'vehiculo', 'mecanico'])->get();
         return view('ordenes-servicio.index', compact('ordenesServicio'));
     }
@@ -121,12 +128,28 @@ class OrdenServicioController extends Controller
     /**
      * Elimina una orden de servicio específica de la base de datos.
      */
-    public function destroy(OrdenServicio $ordenServicio)
+    public function destroy(string $id)
     {
+        // Log muy específico para saber si el método se ejecuta
+        Log::info('=== MÉTODO DESTROY EJECUTADO ===');
+        Log::info('ID recibido como string: ' . $id);
+        
         try {
+            // Buscar la orden manualmente
+            $ordenServicio = OrdenServicio::findOrFail($id);
+            Log::info('Orden encontrada: ' . json_encode($ordenServicio->toArray()));
+            Log::info('Intentando eliminar orden ID: ' . $ordenServicio->id);
+            
             $ordenServicio->delete();
+            Log::info('Orden eliminada exitosamente');
             return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio eliminada exitosamente.');
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::error('Orden no encontrada con ID: ' . $id);
+            return redirect()->route('ordenes-servicio.index')->with('error', 'Error: No se pudo encontrar la orden de servicio.');
         } catch (\Exception $e) {
+            Log::error('Error al eliminar orden: ' . $e->getMessage());
+            Log::error('Trace: ' . $e->getTraceAsString());
             return redirect()->route('ordenes-servicio.index')->with('error', 'Error al eliminar la orden de servicio: ' . $e->getMessage());
         }
     }

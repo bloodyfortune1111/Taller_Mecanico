@@ -45,8 +45,6 @@ Route::middleware('auth')->group(function () {
 
     // Rutas de recursos para Ordenes de Servicio
     Route::resource('ordenes-servicio', OrdenServicioController::class);
-    // ruta para actualizar el estado de una orden de servicio
-    Route::delete('/service', [OrdenServicioController::class, 'destroy'])->name('service.destroy');
     // id para acceder al servicio
    /* Route::get('/ordenes-servicio/{id}/edit', [OrdenServicioController::class, 'edit'])->name('ordenes-servicio.edit');
     Route::get('/ordenes-servicio/{id}', [OrdenServicioController::class, 'show'])->name('ordenes-servicio.show');*/

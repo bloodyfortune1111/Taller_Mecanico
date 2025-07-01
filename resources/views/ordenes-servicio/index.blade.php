@@ -9,9 +9,14 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-medium text-gray-900">Lista de Órdenes de Servicio</h3>
-                        <a href="{{ route('ordenes-servicio.create') }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Crear Nueva Orden</a>
+                        <a href="{{ route('ordenes-servicio.create') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Crear Nueva Orden
+                        </a>
                     </div>
 
                     @if (session('success'))

@@ -13,7 +13,7 @@
 
                     <form method="POST" action="{{ route('ordenes-servicio.update', $ordenServicio->id) }}">
                         @csrf
-                        @method('patch') {{-- O @method('PUT') --}}
+                        @method('PUT')
 
                         <div>
                             <x-input-label for="cliente_id" :value="__('Cliente')" />
@@ -54,19 +54,19 @@
 
                         <div class="mt-4">
                             <x-input-label for="diagnostico" :value="__('Diagnóstico')" />
-                            <textarea id="diagnostico" name="diagnostico" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>{{ old('diagnostico', $ordenServicio->diagnostico) }}</textarea>
+                            <textarea id="diagnostico" name="diagnostico" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('diagnostico', $ordenServicio->diagnostico) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('diagnostico')" />
                         </div>
                         
                         <div class="mt-4">
                             <x-input-label for="servicios_realizar" :value="__('Servicios a Realizar')" />
-                            <textarea id="servicios_realizar" name="servicios_realizar" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('servicios_realizar', $ordenServicio->servicios_realizar) }}</textarea>
+                            <textarea id="servicios_realizar" name="servicios_realizar" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('servicios_realizar', $ordenServicio->servicios_realizar) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('servicios_realizar')" />
                         </div>
 
                         <div class="mt-4">
                             <x-input-label for="repuestos_necesarios" :value="__('Repuestos Necesarios')" />
-                            <textarea id="repuestos_necesarios" name="repuestos_necesarios" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('repuestos_necesarios', $ordenServicio->repuestos_necesarios) }}</textarea>
+                            <textarea id="repuestos_necesarios" name="repuestos_necesarios" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('repuestos_necesarios', $ordenServicio->repuestos_necesarios) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('repuestos_necesarios')" />
                         </div>
 

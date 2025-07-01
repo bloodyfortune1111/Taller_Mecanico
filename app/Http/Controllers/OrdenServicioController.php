@@ -45,11 +45,20 @@ class OrdenServicioController extends Controller
             'repuestos_necesarios' => 'nullable|string',
             'costo_total' => 'required|numeric|min:0',
             'estado' => 'required|in:recibido,en_proceso,finalizado,entregado',
-            'pagado' => 'boolean',
         ]);
     
-        $data = $request->all();
-        $data['pagado'] = $request->has('pagado') ? true : false;
+        $data = $request->only([
+            'cliente_id',
+            'vehiculo_id', 
+            'mecanico_id',
+            'diagnostico',
+            'servicios_realizar',
+            'repuestos_necesarios',
+            'costo_total',
+            'estado'
+        ]);
+        
+        $data['pagado'] = $request->has('pagado');
         
         OrdenServicio::create($data);
         return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio creada exitosamente.');
@@ -67,10 +76,8 @@ class OrdenServicioController extends Controller
     /**
      * Muestra el formulario para editar una orden de servicio existente.
      */
-    public function edit(string $ordenServicioId)
+    public function edit(OrdenServicio $ordenServicio)
     {
-        
-        $ordenServicio = OrdenServicio::findOrFail((int) $ordenServicioId);
         $clientes = Cliente::all();
         $vehiculos = Vehiculo::all();
         $mecanicos = User::all(); // Ajusta según tu lógica de roles si es necesario
@@ -92,11 +99,20 @@ class OrdenServicioController extends Controller
             'repuestos_necesarios' => 'nullable|string',
             'costo_total' => 'required|numeric|min:0',
             'estado' => 'required|in:recibido,en_proceso,finalizado,entregado',
-            'pagado' => 'boolean',
         ]);
 
-        $data = $request->all();
-        $data['pagado'] = $request->has('pagado') ? true : false;
+        $data = $request->only([
+            'cliente_id',
+            'vehiculo_id', 
+            'mecanico_id',
+            'diagnostico',
+            'servicios_realizar',
+            'repuestos_necesarios',
+            'costo_total',
+            'estado'
+        ]);
+        
+        $data['pagado'] = $request->has('pagado');
         
         $ordenServicio->update($data);
         return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio actualizada exitosamente.');

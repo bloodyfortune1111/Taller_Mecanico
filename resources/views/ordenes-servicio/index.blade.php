@@ -25,6 +25,12 @@
                         </div>
                     @endif
 
+                    @if (session('error'))
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     @if ($ordenesServicio->isEmpty())
                         <p>No hay órdenes de servicio registradas.</p>
                     @else
@@ -69,7 +75,7 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <a href="{{ route('ordenes-servicio.show', $orden->id) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Ver</a>
                                                 <a href="{{ route('ordenes-servicio.edit', $orden) }}" class="text-yellow-600 hover:text-yellow-900 mr-3">Editar</a>
-                                                <form action="{{ route('ordenes-servicio.destroy', $orden) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta orden?');">
+                                                <form action="{{ route('ordenes-servicio.destroy', $orden->id) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta orden?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-red-600 hover:text-red-900">Eliminar</button>

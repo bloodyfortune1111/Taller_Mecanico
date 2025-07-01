@@ -45,9 +45,6 @@ Route::middleware('auth')->group(function () {
 
     // Rutas de recursos para Ordenes de Servicio
     Route::resource('ordenes-servicio', OrdenServicioController::class);
-    // id para acceder al servicio
-   /* Route::get('/ordenes-servicio/{id}/edit', [OrdenServicioController::class, 'edit'])->name('ordenes-servicio.edit');
-    Route::get('/ordenes-servicio/{id}', [OrdenServicioController::class, 'show'])->name('ordenes-servicio.show');*/
 });
 
 // Rutas para administración, protegidas por autenticación y rol de admin

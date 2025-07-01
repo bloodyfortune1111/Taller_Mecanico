@@ -123,7 +123,11 @@ class OrdenServicioController extends Controller
      */
     public function destroy(OrdenServicio $ordenServicio)
     {
-        $ordenServicio->delete();
-        return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio eliminada exitosamente.');
+        try {
+            $ordenServicio->delete();
+            return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio eliminada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('ordenes-servicio.index')->with('error', 'Error al eliminar la orden de servicio: ' . $e->getMessage());
+        }
     }
 }

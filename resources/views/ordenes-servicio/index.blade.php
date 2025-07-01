@@ -32,6 +32,7 @@
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehículo</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mecánico</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pagado</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Costo Total</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                                     </tr>
@@ -50,6 +51,13 @@
                                                     @elseif($orden->estado == 'finalizado') bg-green-100 text-green-800
                                                     @else bg-gray-100 text-gray-800 @endif">
                                                     {{ ucfirst(str_replace('_', ' ', $orden->estado)) }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                    @if($orden->pagado) bg-green-100 text-green-800
+                                                    @else bg-red-100 text-red-800 @endif">
+                                                    {{ $orden->pagado ? 'Pagado' : 'Pendiente' }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">${{ number_format($orden->costo_total, 2) }}</td>

@@ -65,6 +65,16 @@
                             <p class="text-lg font-medium text-gray-900">${{ number_format($ordenServicio->costo_total, 2) }}</p>
                         </div>
                         <div>
+                            <p class="text-sm text-gray-500">Estado de Pago:</p>
+                            <p class="text-lg font-medium text-gray-900">
+                                <span class="px-2 inline-flex text-base leading-5 font-semibold rounded-full
+                                    @if($ordenServicio->pagado ?? false) bg-green-100 text-green-800
+                                    @else bg-red-100 text-red-800 @endif">
+                                    {{ ($ordenServicio->pagado ?? false) ? 'Pagado' : 'Pendiente' }}
+                                </span>
+                            </p>
+                        </div>
+                        <div>
                             <p class="text-sm text-gray-500">Fecha de Creación:</p>
                             <p class="text-lg font-medium text-gray-900">{{ optional($ordenServicio->created_at)->format('d/m/Y H:i') ?: 'N/A' }}</p>
                         </div>

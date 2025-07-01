@@ -40,12 +40,18 @@ class OrdenServicioController extends Controller
             'cliente_id' => 'required|exists:clientes,id',
             'vehiculo_id' => 'required|exists:vehiculos,id',
             'mecanico_id' => 'nullable|exists:users,id',
-            'descripcion_problema' => 'required|string|max:1000',
+            'diagnostico' => 'nullable|string',
+            'servicios_realizar' => 'nullable|string',
+            'repuestos_necesarios' => 'nullable|string',
             'costo_total' => 'required|numeric|min:0',
             'estado' => 'required|in:recibido,en_proceso,finalizado,entregado',
+            'pagado' => 'boolean',
         ]);
     
-        OrdenServicio::create($request->all());
+        $data = $request->all();
+        $data['pagado'] = $request->has('pagado') ? true : false;
+        
+        OrdenServicio::create($data);
         return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio creada exitosamente.');
     }
 
@@ -81,12 +87,18 @@ class OrdenServicioController extends Controller
             'cliente_id' => 'required|exists:clientes,id',
             'vehiculo_id' => 'required|exists:vehiculos,id',
             'mecanico_id' => 'nullable|exists:users,id',
-            'descripcion_problema' => 'required|string|max:1000',
+            'diagnostico' => 'nullable|string',
+            'servicios_realizar' => 'nullable|string',
+            'repuestos_necesarios' => 'nullable|string',
             'costo_total' => 'required|numeric|min:0',
             'estado' => 'required|in:recibido,en_proceso,finalizado,entregado',
+            'pagado' => 'boolean',
         ]);
 
-        $ordenServicio->update($request->all());
+        $data = $request->all();
+        $data['pagado'] = $request->has('pagado') ? true : false;
+        
+        $ordenServicio->update($data);
         return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio actualizada exitosamente.');
     }
 

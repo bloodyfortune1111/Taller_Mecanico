@@ -54,6 +54,30 @@
                         </div>
 
                         <div class="mb-4">
+                            <label for="diagnostico" class="block text-sm font-medium text-gray-700">Diagnóstico</label>
+                            <textarea name="diagnostico" id="diagnostico" rows="4" placeholder="Ingrese el diagnóstico del problema..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('diagnostico') }}</textarea>
+                            @error('diagnostico')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="servicios_realizar" class="block text-sm font-medium text-gray-700">Servicios a Realizar</label>
+                            <textarea name="servicios_realizar" id="servicios_realizar" rows="4" placeholder="Detalle los servicios que se realizarán..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('servicios_realizar') }}</textarea>
+                            @error('servicios_realizar')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="repuestos_necesarios" class="block text-sm font-medium text-gray-700">Repuestos Necesarios</label>
+                            <textarea name="repuestos_necesarios" id="repuestos_necesarios" rows="4" placeholder="Liste los repuestos necesarios..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('repuestos_necesarios') }}</textarea>
+                            @error('repuestos_necesarios')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
                             <label for="descripcion_problema" class="block text-sm font-medium text-gray-700">Descripción del Problema</label>
                             <textarea name="descripcion_problema" id="descripcion_problema" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('descripcion_problema') }}</textarea>
                             @error('descripcion_problema')
@@ -78,6 +102,16 @@
                                 <option value="entregado" {{ old('estado') == 'entregado' ? 'selected' : '' }}>Entregado</option>
                             </select>
                             @error('estado')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="flex items-center">
+                                <input type="checkbox" name="pagado" id="pagado" value="1" {{ old('pagado') ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <label for="pagado" class="ml-2 block text-sm text-gray-900">¿Ha sido pagado?</label>
+                            </div>
+                            @error('pagado')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>

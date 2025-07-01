@@ -87,6 +87,16 @@
                             <x-input-error class="mt-2" :messages="$errors->get('estado')" />
                         </div>
 
+                        <div class="mt-4">
+                            <div class="flex items-center">
+                                <input type="checkbox" name="pagado" id="pagado" value="1" 
+                                    {{ old('pagado', $ordenServicio->pagado ?? false) ? 'checked' : '' }} 
+                                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <label for="pagado" class="ml-2 block text-sm text-gray-900">¿Ha sido pagado?</label>
+                            </div>
+                            <x-input-error class="mt-2" :messages="$errors->get('pagado')" />
+                        </div>
+
                         <div class="flex items-center justify-end mt-4">
                             <x-primary-button class="ms-4">
                                 {{ __('Actualizar Orden') }}

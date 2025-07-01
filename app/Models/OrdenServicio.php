@@ -13,9 +13,12 @@ class OrdenServicio extends Model
         'cliente_id',
         'vehiculo_id',
         'mecanico_id',
-        'descripcion_problema',
+        'diagnostico',
+        'servicios_realizar',
+        'repuestos_necesarios',
         'costo_total',
         'estado',
+        'pagado',
     ];
 
     public function cliente()

@@ -6,8 +6,11 @@ use App\Models\OrdenServicio;
 use App\Models\Cliente;
 use App\Models\Vehiculo;
 use App\Models\User;
+use App\Models\Servicio;
+use App\Models\Pieza;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class OrdenServicioController extends Controller
 {
@@ -34,8 +37,10 @@ class OrdenServicioController extends Controller
         $clientes = Cliente::all();
         $vehiculos = Vehiculo::all();
         $mecanicos = User::all(); // Ajusta según tu lógica de roles si es necesario
+        $servicios = Servicio::orderBy('nombre')->get();
+        $piezas = Pieza::orderBy('nombre')->get();
         
-        return view('ordenes-servicio.create', compact('clientes', 'vehiculos', 'mecanicos'));
+        return view('ordenes-servicio.create', compact('clientes', 'vehiculos', 'mecanicos', 'servicios', 'piezas'));
     }
 
     /**
@@ -52,23 +57,66 @@ class OrdenServicioController extends Controller
             'repuestos_necesarios' => 'nullable|string',
             'costo_total' => 'required|numeric|min:0',
             'estado' => 'required|in:recibido,en_proceso,finalizado,entregado',
+            'servicios' => 'nullable|array',
+            'servicios.*' => 'exists:servicios,id',
+            'piezas' => 'nullable|array',
+            'piezas.*.id' => 'exists:piezas,id',
+            'piezas.*.cantidad' => 'integer|min:1',
         ]);
-    
-        $data = $request->only([
-            'cliente_id',
-            'vehiculo_id', 
-            'mecanico_id',
-            'diagnostico',
-            'servicios_realizar',
-            'repuestos_necesarios',
-            'costo_total',
-            'estado'
-        ]);
+
+        DB::beginTransaction();
         
-        $data['pagado'] = $request->has('pagado');
-        
-        OrdenServicio::create($data);
-        return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio creada exitosamente.');
+        try {
+            // Crear la orden de servicio
+            $data = $request->only([
+                'cliente_id',
+                'vehiculo_id', 
+                'mecanico_id',
+                'diagnostico',
+                'servicios_realizar',
+                'repuestos_necesarios',
+                'costo_total',
+                'estado'
+            ]);
+            
+            $data['pagado'] = $request->has('pagado');
+            
+            $ordenServicio = OrdenServicio::create($data);
+
+            // Asociar servicios si se proporcionaron
+            if ($request->has('servicios') && is_array($request->servicios)) {
+                $ordenServicio->servicios()->attach($request->servicios);
+            }
+
+            // Asociar piezas con cantidades si se proporcionaron
+            if ($request->has('piezas') && is_array($request->piezas)) {
+                $piezasData = [];
+                foreach ($request->piezas as $pieza) {
+                    if (isset($pieza['id']) && isset($pieza['cantidad'])) {
+                        $piezasData[$pieza['id']] = ['cantidad' => $pieza['cantidad']];
+                    }
+                }
+                if (!empty($piezasData)) {
+                    $ordenServicio->piezas()->attach($piezasData);
+                }
+            }
+
+            // Recalcular el costo total basado en servicios y piezas seleccionados
+            $costoCalculado = $ordenServicio->calcularCostoTotal();
+            $ordenServicio->update(['costo_total' => $costoCalculado]);
+
+            DB::commit();
+            
+            return redirect()->route('ordenes-servicio.index')
+                ->with('success', 'Orden de servicio creada exitosamente.');
+                
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Error al crear orden de servicio: ' . $e->getMessage());
+            
+            return back()->withInput()
+                ->with('error', 'Hubo un error al crear la orden de servicio: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -76,7 +124,8 @@ class OrdenServicioController extends Controller
      */
     public function show(string $ordenServicio)
     {
-        $ordenServicio = OrdenServicio::with(['cliente', 'vehiculo', 'mecanico'])->findOrFail((int) $ordenServicio);
+        $ordenServicio = OrdenServicio::with(['cliente', 'vehiculo', 'mecanico', 'servicios', 'piezas'])
+            ->findOrFail((int) $ordenServicio);
         return view('ordenes-servicio.show', compact('ordenServicio'));
     }
 
@@ -85,11 +134,14 @@ class OrdenServicioController extends Controller
      */
     public function edit(OrdenServicio $ordenServicio)
     {
+        $ordenServicio->load(['servicios', 'piezas']);
         $clientes = Cliente::all();
         $vehiculos = Vehiculo::all();
         $mecanicos = User::all(); // Ajusta según tu lógica de roles si es necesario
+        $servicios = Servicio::orderBy('nombre')->get();
+        $piezas = Pieza::orderBy('nombre')->get();
         
-        return view('ordenes-servicio.edit', compact('ordenServicio', 'clientes', 'vehiculos', 'mecanicos'));
+        return view('ordenes-servicio.edit', compact('ordenServicio', 'clientes', 'vehiculos', 'mecanicos', 'servicios', 'piezas'));
     }
 
     /**
@@ -106,23 +158,68 @@ class OrdenServicioController extends Controller
             'repuestos_necesarios' => 'nullable|string',
             'costo_total' => 'required|numeric|min:0',
             'estado' => 'required|in:recibido,en_proceso,finalizado,entregado',
+            'servicios' => 'nullable|array',
+            'servicios.*' => 'exists:servicios,id',
+            'piezas' => 'nullable|array',
+            'piezas.*.id' => 'exists:piezas,id',
+            'piezas.*.cantidad' => 'integer|min:1',
         ]);
 
-        $data = $request->only([
-            'cliente_id',
-            'vehiculo_id', 
-            'mecanico_id',
-            'diagnostico',
-            'servicios_realizar',
-            'repuestos_necesarios',
-            'costo_total',
-            'estado'
-        ]);
+        DB::beginTransaction();
         
-        $data['pagado'] = $request->has('pagado');
-        
-        $ordenServicio->update($data);
-        return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio actualizada exitosamente.');
+        try {
+            // Actualizar los datos básicos de la orden
+            $data = $request->only([
+                'cliente_id',
+                'vehiculo_id', 
+                'mecanico_id',
+                'diagnostico',
+                'servicios_realizar',
+                'repuestos_necesarios',
+                'costo_total',
+                'estado'
+            ]);
+            
+            $data['pagado'] = $request->has('pagado');
+            
+            $ordenServicio->update($data);
+
+            // Sincronizar servicios
+            if ($request->has('servicios') && is_array($request->servicios)) {
+                $ordenServicio->servicios()->sync($request->servicios);
+            } else {
+                $ordenServicio->servicios()->sync([]);
+            }
+
+            // Sincronizar piezas con cantidades
+            if ($request->has('piezas') && is_array($request->piezas)) {
+                $piezasData = [];
+                foreach ($request->piezas as $pieza) {
+                    if (isset($pieza['id']) && isset($pieza['cantidad'])) {
+                        $piezasData[$pieza['id']] = ['cantidad' => $pieza['cantidad']];
+                    }
+                }
+                $ordenServicio->piezas()->sync($piezasData);
+            } else {
+                $ordenServicio->piezas()->sync([]);
+            }
+
+            // Recalcular el costo total basado en servicios y piezas seleccionados
+            $costoCalculado = $ordenServicio->calcularCostoTotal();
+            $ordenServicio->update(['costo_total' => $costoCalculado]);
+
+            DB::commit();
+            
+            return redirect()->route('ordenes-servicio.show', $ordenServicio)
+                ->with('success', 'Orden de servicio actualizada exitosamente.');
+                
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Error al actualizar orden de servicio: ' . $e->getMessage());
+            
+            return back()->withInput()
+                ->with('error', 'Hubo un error al actualizar la orden de servicio: ' . $e->getMessage());
+        }
     }
 
     /**

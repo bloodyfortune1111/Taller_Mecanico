@@ -1,0 +1,426 @@
+/* Estilos personalizados para el Taller Mecánico */
+
+/* Estilos para navegación */
+.nav-item {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-item:hover {
+    transform: translateY(-2px);
+}
+
+.nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+    transition: width 0.3s ease;
+}
+
+.nav-item:hover::after {
+    width: 100%;
+}
+
+/* Navegación con mejor espaciado y proporciones */
+.navbar-container {
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.nav-link-improved {
+    padding: 10px 16px !important;
+    margin: 0 4px;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    color: #374151 !important;
+}
+
+.nav-link-improved:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    color: #3b82f6 !important;
+}
+
+.nav-link-improved.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
+    color: #3b82f6 !important;
+    font-weight: 600;
+}
+
+.nav-link-improved svg {
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.nav-link-improved:hover svg {
+    transform: scale(1.1);
+    color: #3b82f6;
+}
+
+/* Logo compacto y proporcionado */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.logo-icon:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+/* Animaciones suaves para las tarjetas */
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Gradientes personalizados para la marca */
+.gradient-primary {
+    background: linear-gradient(135deg, #3B82F6 0%, #6366F1 50%, #8B5CF6 100%);
+}
+
+.gradient-success {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.gradient-warning {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.gradient-danger {
+    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+}
+
+/* Efectos de brillo en botones */
+.btn-glow {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.btn-glow:hover::before {
+    left: 100%;
+}
+
+/* Animación de pulso para indicadores de estado */
+.pulse-animation {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Efectos de loading skeleton */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Estilos para las tarjetas de estadísticas */
+.stats-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stats-card h3,
+.stats-card p {
+    color: #000000 !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+    font-weight: 600 !important;
+}
+
+.stats-card svg {
+    color: #000000 !important;
+    filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.3));
+}
+
+/* Efectos hover para iconos */
+.icon-hover {
+    transition: transform 0.3s ease;
+}
+
+.icon-hover:hover {
+    transform: rotate(360deg) scale(1.1);
+}
+
+/* Estilos para notificaciones */
+.notification-enter {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.notification-exit {
+    animation: slideOutRight 0.3s ease-in;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Efectos de texto con gradiente */
+.text-gradient {
+    background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Sombras personalizadas */
+.shadow-custom {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-custom-lg {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design mejorado */
+@media (max-width: 768px) {
+    .card-hover:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+
+    .navigation-spacing {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* Animación de carga para elementos */
+.fade-in {
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para los badges de estado */
+.badge-pulse {
+    animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Efectos especiales para el carrusel */
+.carousel-overlay {
+    background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+}
+
+/* Estilos para formularios mejorados */
+.form-input-focus {
+    transition: all 0.3s ease;
+}
+
+.form-input-focus:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+}
+
+/* Estilos para compactar layouts */
+.compact-layout {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+
+.compact-stats {
+    gap: 1rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.compact-header {
+    padding: 1rem 1.5rem !important;
+    margin: 0 1.5rem !important;
+    border-radius: 0.5rem !important;
+}
+
+.compact-panel {
+    padding: 1.5rem !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.compact-button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.5rem !important;
+}
+
+.compact-card {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Reducir espacios innecesarios */
+.section-spacing {
+    margin-bottom: 1.5rem;
+}
+
+.tight-spacing {
+    margin-bottom: 1rem;
+}
+
+/* Ajustar altura de elementos */
+.nav-height {
+    height: 60px;
+}
+
+.header-height {
+    min-height: unset;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* Responsive compacto */
+@media (max-width: 768px) {
+    .compact-layout {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+    
+    .compact-header {
+        margin: 0 1rem !important;
+        padding: 0.75rem 1rem !important;
+    }
+    
+    .compact-panel {
+        padding: 1rem !important;
+    }
+}
+
+/* Estilos para asegurar visibilidad del texto */
+.text-visibility-fix {
+    color: #1f2937 !important;
+}
+
+.white-text-force {
+    color: white !important;
+}
+
+/* Mejorar legibilidad en headers */
+.header-title {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Forzar texto blanco visible en headers */
+.bg-gradient-to-r h2,
+.bg-gradient-to-r p,
+.bg-gradient-to-r svg {
+    color: white !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.bg-gradient-to-r h2 {
+    font-weight: 700 !important;
+}
+
+.bg-gradient-to-r p {
+    opacity: 0.9 !important;
+}
+
+/* Asegurar que el header sea visible */
+.header-container {
+    background: linear-gradient(135deg, #2563eb 0%, #4338ca 100%) !important;
+    color: white !important;
+}

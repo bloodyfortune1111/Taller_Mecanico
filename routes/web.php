@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Log;
 // Importa tus controladores
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\VehiculoController;
-use App\Http\Controllers\OrdenServicioController; // <--- Asegúrate de que esta importación esté aquí
+use App\Http\Controllers\OrdenServicioController;
+use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\PiezaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +48,21 @@ Route::middleware('auth')->group(function () {
 
     // Rutas de recursos para Ordenes de Servicio
     Route::resource('ordenes-servicio', OrdenServicioController::class);
+    
+    // Rutas de recursos para Servicios
+    Route::resource('servicios', ServicioController::class);
+    
+    // Rutas de recursos para Piezas
+    Route::resource('piezas', PiezaController::class);
+    
+    // Rutas AJAX para catálogos
+    Route::get('/api/servicios', [ServicioController::class, 'getServicios'])->name('api.servicios');
+    Route::get('/api/piezas', [PiezaController::class, 'getPiezas'])->name('api.piezas');
+    
+    // Rutas específicas para PartsTech API
+    Route::post('/piezas/search-partstech', [PiezaController::class, 'searchPartsTech'])->name('piezas.search-partstech');
+    Route::post('/piezas/import-partstech', [PiezaController::class, 'importFromPartsTech'])->name('piezas.import-partstech');
+    Route::get('/piezas/test-connection', [PiezaController::class, 'testPartsTechConnection'])->name('piezas.test-connection');
     
     // Ruta de prueba para depurar eliminación
     Route::get('/debug-delete/{id}', function($id) {

@@ -91,12 +91,76 @@
 
                     <div class="mt-4 border-t border-gray-200 pt-4">
                         <p class="text-sm text-gray-500">Servicios a Realizar:</p>
-                        <p class="text-gray-900 text-base mt-1">{{ $ordenServicio->servicios_realizar ?? 'N/A' }}</p>
+                        @if($ordenServicio->servicios && $ordenServicio->servicios->count() > 0)
+                            <div class="mt-2 space-y-2">
+                                @foreach($ordenServicio->servicios as $servicio)
+                                    <div class="flex justify-between items-center p-2 bg-blue-50 rounded border">
+                                        <span class="font-medium">{{ $servicio->nombre }}</span>
+                                        <div class="text-right">
+                                            <span class="text-green-600 font-bold">${{ number_format($servicio->precio, 2) }}</span>
+                                            @if($servicio->descripcion)
+                                                <p class="text-xs text-gray-600">{{ $servicio->descripcion }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                                <div class="flex justify-end pt-2 border-t border-blue-200">
+                                    <span class="font-bold text-blue-800">
+                                        Subtotal Servicios: ${{ number_format($ordenServicio->servicios->sum('precio'), 2) }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endif
+                        @if($ordenServicio->servicios_realizar)
+                            <div class="mt-3 p-2 bg-gray-50 rounded">
+                                <p class="text-sm text-gray-600 font-medium">Descripción adicional:</p>
+                                <p class="text-gray-900 text-base mt-1">{{ $ordenServicio->servicios_realizar }}</p>
+                            </div>
+                        @endif
+                        @if((!$ordenServicio->servicios || $ordenServicio->servicios->count() == 0) && !$ordenServicio->servicios_realizar)
+                            <p class="text-gray-900 text-base mt-1">N/A</p>
+                        @endif
                     </div>
 
                     <div class="mt-4 border-t border-gray-200 pt-4">
-                        <p class="text-sm text-gray-500">Repuestos Necesarios:</p>
-                        <p class="text-gray-900 text-base mt-1">{{ $ordenServicio->repuestos_necesarios ?? 'N/A' }}</p>
+                        <p class="text-sm text-gray-500">Piezas y Repuestos:</p>
+                        @if($ordenServicio->piezas && $ordenServicio->piezas->count() > 0)
+                            <div class="mt-2 space-y-2">
+                                @foreach($ordenServicio->piezas as $pieza)
+                                    <div class="flex justify-between items-center p-2 bg-green-50 rounded border">
+                                        <div>
+                                            <span class="font-medium">{{ $pieza->nombre }}</span>
+                                            <span class="text-gray-600">(x{{ $pieza->pivot->cantidad }})</span>
+                                            @if($pieza->numero_parte)
+                                                <p class="text-xs text-gray-600">Parte: {{ $pieza->numero_parte }}</p>
+                                            @endif
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-green-600 font-bold">
+                                                ${{ number_format($pieza->precio * $pieza->pivot->cantidad, 2) }}
+                                            </span>
+                                            <p class="text-xs text-gray-600">
+                                                ${{ number_format($pieza->precio, 2) }} c/u
+                                            </p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                                <div class="flex justify-end pt-2 border-t border-green-200">
+                                    <span class="font-bold text-green-800">
+                                        Subtotal Piezas: ${{ number_format($ordenServicio->piezas->sum(function($pieza) { return $pieza->precio * $pieza->pivot->cantidad; }), 2) }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endif
+                        @if($ordenServicio->repuestos_necesarios)
+                            <div class="mt-3 p-2 bg-gray-50 rounded">
+                                <p class="text-sm text-gray-600 font-medium">Descripción adicional:</p>
+                                <p class="text-gray-900 text-base mt-1">{{ $ordenServicio->repuestos_necesarios }}</p>
+                            </div>
+                        @endif
+                        @if((!$ordenServicio->piezas || $ordenServicio->piezas->count() == 0) && !$ordenServicio->repuestos_necesarios)
+                            <p class="text-gray-900 text-base mt-1">N/A</p>
+                        @endif
                     </div>
 
                     <div class="flex items-center justify-end mt-6">

@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'partstech' => [
+        'base_url' => env('PARTSTECH_BASE_URL', 'https://api.partstech.com/v1'),
+        'api_key' => env('PARTSTECH_API_KEY'),
+        'timeout' => env('PARTSTECH_TIMEOUT', 30),
+    ],
+
 ];

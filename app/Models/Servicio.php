@@ -9,17 +9,32 @@ class Servicio extends Model
     protected $fillable = [
         'nombre',
         'descripcion',
+        'precio',
         'precio_base',
         'categoria',
         'tiempo_estimado',
+        'duracion_estimada',
         'activo'
     ];
 
     protected $casts = [
+        'precio' => 'decimal:2',
         'precio_base' => 'decimal:2',
         'activo' => 'boolean',
-        'tiempo_estimado' => 'integer'
+        'tiempo_estimado' => 'integer',
+        'duracion_estimada' => 'integer'
     ];
+
+    // Accessor para compatibilidad con la API
+    public function getPrecioAttribute($value)
+    {
+        return $value ?? $this->precio_base;
+    }
+
+    public function getDuracionEstimadaAttribute($value)
+    {
+        return $value ?? $this->tiempo_estimado;
+    }
 
     // Scope para obtener únicamente los servicios activos
     public function scopeActivos($query)

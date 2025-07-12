@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba API Piezas</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .result { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffebee; color: #c62828; }
+        .success { background: #e8f5e8; color: #2e7d32; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Prueba API de Piezas del Taller</h1>
+        
+        <div class="grid">
+            <button onclick="probarAPI('/')">📋 Todas las Piezas</button>
+            <button onclick="probarAPI('/categoria?categoria=Motor')">🚗 Piezas de Motor</button>
+            <button onclick="probarAPI('/categoria?categoria=Frenos')">🛑 Piezas de Frenos</button>
+            <button onclick="probarAPI('/buscar?q=filtro')">🔍 Buscar "filtro"</button>
+            <button onclick="probarAPI('/marca?marca=Bosch')">🏭 Marca Bosch</button>
+            <button onclick="probarAPI('/categorias')">📂 Categorías</button>
+            <button onclick="probarAPI('/marcas')">🏷️ Marcas</button>
+            <button onclick="probarAPI('/estadisticas')">📊 Estadísticas</button>
+        </div>
+        
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        async function probarAPI(endpoint) {
+            const url = '/api/piezas-taller' + endpoint;
+            const resultDiv = document.getElementById('resultado');
+            
+            try {
+                resultDiv.innerHTML = '<div class="result">⏳ Cargando...</div>';
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    let content = `
+                        <div class="result success">
+                            <h3>✅ Éxito: ${endpoint}</h3>
+                            <p><strong>Mensaje:</strong> ${data.message}</p>
+                    `;
+                    
+                    if (data.data && Array.isArray(data.data)) {
+                        content += `<p><strong>Resultados:</strong> ${data.data.length} piezas</p>`;
+                        
+                        // Mostrar algunas piezas de ejemplo
+                        if (data.data.length > 0) {
+                            content += '<h4>Ejemplos:</h4><ul>';
+                            data.data.slice(0, 5).forEach(pieza => {
+                                content += `<li><strong>${pieza.nombre}</strong> - $${pieza.precio} (${pieza.marca || 'Sin marca'})</li>`;
+                            });
+                            content += '</ul>';
+                        }
+                    } else if (data.data && typeof data.data === 'object') {
+                        content += '<p><strong>Datos:</strong> Información obtenida</p>';
+                    }
+                    
+                    content += `
+                            <details>
+                                <summary>Ver datos completos</summary>
+                                <pre>${JSON.stringify(data, null, 2)}</pre>
+                            </details>
+                        </div>
+                    `;
+                    
+                    resultDiv.innerHTML = content;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Error: ${endpoint}</h3>
+                            <p><strong>Código:</strong> ${response.status}</p>
+                            <p><strong>Mensaje:</strong> ${data.message || 'Error desconocido'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Error de conexión: ${endpoint}</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

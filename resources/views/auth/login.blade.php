@@ -43,5 +43,11 @@
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ route('mecanico.login') }}" class="text-sm text-blue-600 hover:text-blue-500">
+                ¿Eres mecánico? Accede a tu panel aquí
+            </a>
+        </div>
     </form>
 </x-guest-layout>

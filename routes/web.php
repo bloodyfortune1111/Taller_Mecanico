@@ -25,14 +25,37 @@ Route::get('/', function () {
     return view('carrusel'); // Tu ruta de inicio personalizada
 });
 
-// Rutas para el dashboard, protegidas por autenticación y verificación de email
+// Rutas para el panel de mecánicos (sistema separado)
+Route::prefix('mecanico')->name('mecanico.')->group(function () {
+    // Rutas para invitados (no autenticados)
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [App\Http\Controllers\Auth\MecanicoAuthController::class, 'showLoginForm'])
+            ->name('login');
+        Route::post('/login', [App\Http\Controllers\Auth\MecanicoAuthController::class, 'login'])
+            ->name('login.post');
+    });
+    
+    // Rutas protegidas para mecánicos autenticados
+    Route::middleware(['auth', 'mecanico.only'])->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\MecanicoController::class, 'dashboard'])
+            ->name('dashboard');
+        Route::get('/orden/{id}', [App\Http\Controllers\MecanicoController::class, 'verOrden'])
+            ->name('orden');
+        Route::post('/orden/{id}/estado', [App\Http\Controllers\MecanicoController::class, 'actualizarEstado'])
+            ->name('orden.estado');
+        Route::post('/logout', [App\Http\Controllers\Auth\MecanicoAuthController::class, 'logout'])
+            ->name('logout');
+    });
+});
+
+// Rutas para el dashboard, protegidas por autenticación y solo para administrador
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'admin.only'])->name('dashboard');
 
-// Grupo ÚNICO de rutas protegidas por autenticación
-// Todas las rutas dentro de este grupo requerirán que el usuario esté autenticado.
-Route::middleware('auth')->group(function () {
+// Grupo ÚNICO de rutas protegidas por autenticación y solo para administrador
+// Todas las rutas dentro de este grupo requerirán que el usuario sea el administrador autorizado.
+Route::middleware(['auth', 'admin.only'])->group(function () {
     // Rutas de perfil de usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -58,6 +81,28 @@ Route::middleware('auth')->group(function () {
     // Rutas AJAX para catálogos
     Route::get('/api/servicios', [ServicioController::class, 'getServicios'])->name('api.servicios');
     Route::get('/api/piezas', [PiezaController::class, 'getPiezas'])->name('api.piezas');
+    
+    // Rutas API para servicios propios del taller
+    Route::prefix('api/servicios-taller')->name('api.servicios-taller.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\ServicioApiController::class, 'index'])->name('index');
+        Route::get('/categoria', [App\Http\Controllers\Api\ServicioApiController::class, 'porCategoria'])->name('categoria');
+        Route::get('/buscar', [App\Http\Controllers\Api\ServicioApiController::class, 'buscar'])->name('buscar');
+        Route::get('/recomendados', [App\Http\Controllers\Api\ServicioApiController::class, 'recomendados'])->name('recomendados');
+        Route::get('/estadisticas', [App\Http\Controllers\Api\ServicioApiController::class, 'estadisticas'])->name('estadisticas');
+        Route::get('/{id}', [App\Http\Controllers\Api\ServicioApiController::class, 'show'])->name('show');
+    });
+    
+    // Rutas API para piezas propias del taller
+    Route::prefix('api/piezas-taller')->name('api.piezas-taller.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\PiezaApiController::class, 'index'])->name('index');
+        Route::get('/categoria', [App\Http\Controllers\Api\PiezaApiController::class, 'porCategoria'])->name('categoria');
+        Route::get('/buscar', [App\Http\Controllers\Api\PiezaApiController::class, 'buscar'])->name('buscar');
+        Route::get('/marca', [App\Http\Controllers\Api\PiezaApiController::class, 'porMarca'])->name('marca');
+        Route::get('/categorias', [App\Http\Controllers\Api\PiezaApiController::class, 'categorias'])->name('categorias');
+        Route::get('/marcas', [App\Http\Controllers\Api\PiezaApiController::class, 'marcas'])->name('marcas');
+        Route::get('/estadisticas', [App\Http\Controllers\Api\PiezaApiController::class, 'estadisticas'])->name('estadisticas');
+        Route::get('/{id}', [App\Http\Controllers\Api\PiezaApiController::class, 'show'])->name('show');
+    });
     
     // Rutas específicas para PartsTech API
     Route::post('/piezas/search-partstech', [PiezaController::class, 'searchPartsTech'])->name('piezas.search-partstech');
@@ -87,8 +132,8 @@ Route::middleware('auth')->group(function () {
     })->name('debug.delete');
 });
 
-// Rutas para administración, protegidas por autenticación y rol de admin
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+// Rutas para administración, protegidas por autenticación y solo para administrador
+Route::middleware(['auth', 'admin.only'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 });
 

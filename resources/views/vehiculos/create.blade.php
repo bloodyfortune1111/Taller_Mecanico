@@ -56,9 +56,9 @@
                            </div>
 
                            <div class="mb-4">
-                               <label for="ano" class="block text-sm font-medium text-gray-700">Año:</label>
-                               <input type="number" name="ano" id="ano" value="{{ old('ano') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                               @error('ano')
+                               <label for="año" class="block text-sm font-medium text-gray-700">Año:</label>
+                               <input type="number" name="año" id="año" value="{{ old('año') }}" min="1900" max="{{ date('Y') + 1 }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                               @error('año')
                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                @enderror
                            </div>
@@ -75,6 +75,29 @@
                                <label for="color" class="block text-sm font-medium text-gray-700">Color:</label>
                                <input type="text" name="color" id="color" value="{{ old('color') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                @error('color')
+                                   <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                               @enderror
+                           </div>
+
+                           <div class="mb-4">
+                               <label for="combustible" class="block text-sm font-medium text-gray-700">Tipo de Combustible:</label>
+                               <select name="combustible" id="combustible" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                   <option value="">Selecciona un tipo</option>
+                                   <option value="gasolina" {{ old('combustible') == 'gasolina' ? 'selected' : '' }}>Gasolina</option>
+                                   <option value="diesel" {{ old('combustible') == 'diesel' ? 'selected' : '' }}>Diesel</option>
+                                   <option value="hibrido" {{ old('combustible') == 'hibrido' ? 'selected' : '' }}>Híbrido</option>
+                                   <option value="electrico" {{ old('combustible') == 'electrico' ? 'selected' : '' }}>Eléctrico</option>
+                                   <option value="gas" {{ old('combustible') == 'gas' ? 'selected' : '' }}>Gas</option>
+                               </select>
+                               @error('combustible')
+                                   <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                               @enderror
+                           </div>
+
+                           <div class="mb-4">
+                               <label for="kilometraje" class="block text-sm font-medium text-gray-700">Kilometraje:</label>
+                               <input type="number" name="kilometraje" id="kilometraje" value="{{ old('kilometraje') }}" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                               @error('kilometraje')
                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                @enderror
                            </div>

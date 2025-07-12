@@ -66,20 +66,32 @@
                             <h4 class="text-md font-medium text-gray-800 mb-4">Servicios a Realizar</h4>
                             
                             <div class="mb-4">
-                                <label for="servicio_select" class="block text-sm font-medium text-gray-700">Agregar Servicio</label>
+                                <label for="categoria_filter" class="block text-sm font-medium text-gray-700">Filtrar por Categoría</label>
+                                <select id="categoria_filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <option value="">Todas las categorías</option>
+                                    <option value="Mantenimiento Preventivo">Mantenimiento Preventivo</option>
+                                    <option value="Mantenimiento Mayor">Mantenimiento Mayor</option>
+                                    <option value="Reparación">Reparación</option>
+                                    <option value="Diagnóstico">Diagnóstico</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="servicio_select" class="block text-sm font-medium text-gray-700">Seleccionar Servicio</label>
                                 <div class="flex gap-2 mt-1">
                                     <select id="servicio_select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                         <option value="">Seleccione un servicio</option>
-                                        @foreach($servicios as $servicio)
-                                            <option value="{{ $servicio->id }}" data-precio="{{ $servicio->precio }}">
-                                                {{ $servicio->nombre }} - ${{ number_format($servicio->precio, 2) }}
-                                            </option>
-                                        @endforeach
                                     </select>
                                     <button type="button" onclick="agregarServicio()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                                         Agregar
                                     </button>
                                 </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <button type="button" onclick="cargarRecomendados()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                                    Servicios Recomendados
+                                </button>
                             </div>
 
                             <div id="servicios_seleccionados" class="mb-4">
@@ -103,15 +115,24 @@
                             <h4 class="text-md font-medium text-gray-800 mb-4">Piezas y Repuestos</h4>
                             
                             <div class="mb-4">
-                                <label for="pieza_select" class="block text-sm font-medium text-gray-700">Agregar Pieza</label>
+                                <label for="categoria_pieza_filter" class="block text-sm font-medium text-gray-700">Filtrar por Categoría</label>
+                                <select id="categoria_pieza_filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <option value="">Todas las categorías</option>
+                                    <option value="Motor">Motor</option>
+                                    <option value="Frenos">Frenos</option>
+                                    <option value="Transmisión">Transmisión</option>
+                                    <option value="Suspensión">Suspensión</option>
+                                    <option value="Eléctrico">Eléctrico</option>
+                                    <option value="Carrocería">Carrocería</option>
+                                    <option value="Neumáticos">Neumáticos</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="pieza_select" class="block text-sm font-medium text-gray-700">Seleccionar Pieza</label>
                                 <div class="flex gap-2 mt-1">
                                     <select id="pieza_select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                         <option value="">Seleccione una pieza</option>
-                                        @foreach($piezas as $pieza)
-                                            <option value="{{ $pieza->id }}" data-precio="{{ $pieza->precio }}">
-                                                {{ $pieza->nombre }} - ${{ number_format($pieza->precio, 2) }}
-                                            </option>
-                                        @endforeach
                                     </select>
                                     <input type="number" id="cantidad_pieza" min="1" value="1" class="w-20 rounded-md border-gray-300 shadow-sm" placeholder="Cant.">
                                     <button type="button" onclick="agregarPieza()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
@@ -237,6 +258,244 @@
         // Arrays para mantener servicios y piezas seleccionados
         let serviciosSeleccionados = [];
         let piezasSeleccionadas = [];
+        let serviciosDisponibles = [];
+        let piezasDisponibles = [];
+
+        // Cargar servicios al inicio
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarServicios();
+            cargarPiezas();
+            
+            // Configurar evento de filtro por categoría
+            document.getElementById('categoria_filter').addEventListener('change', filtrarPorCategoria);
+            document.getElementById('categoria_pieza_filter').addEventListener('change', filtrarPiezasPorCategoria);
+        });
+
+        /**
+         * Función debounce para evitar múltiples llamadas
+         */
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        /**
+         * Cargar todos los servicios desde la API
+         */
+        async function cargarServicios() {
+            try {
+                const response = await fetch('/api/servicios-taller/');
+                const data = await response.json();
+                
+                if (data.success) {
+                    serviciosDisponibles = data.data;
+                    mostrarServicios(serviciosDisponibles);
+                } else {
+                    console.error('Error al cargar servicios:', data.message);
+                }
+            } catch (error) {
+                console.error('Error en la petición:', error);
+            }
+        }
+
+        /**
+         * Cargar todas las piezas desde la API
+         */
+        async function cargarPiezas() {
+            try {
+                const response = await fetch('/api/piezas-taller/');
+                const data = await response.json();
+                
+                if (data.success) {
+                    piezasDisponibles = data.data;
+                    mostrarPiezas(piezasDisponibles);
+                } else {
+                    console.error('Error al cargar piezas:', data.message);
+                }
+            } catch (error) {
+                console.error('Error en la petición:', error);
+            }
+        }
+
+        /**
+         * Mostrar estado de búsqueda
+         */
+        function mostrarEstadoBusqueda(mensaje, esError = false) {
+            const statusDiv = document.getElementById('busqueda_status');
+            if (statusDiv) {
+                statusDiv.textContent = mensaje;
+                statusDiv.className = `mt-1 text-sm ${esError ? 'text-red-600' : 'text-gray-600'}`;
+                statusDiv.classList.remove('hidden');
+                
+                // Ocultar después de 3 segundos si no es error
+                if (!esError) {
+                    setTimeout(() => {
+                        statusDiv.classList.add('hidden');
+                    }, 3000);
+                }
+            }
+        }
+
+        /**
+         * Filtrar servicios por categoría
+         */
+        async function filtrarPorCategoria() {
+            const categoria = document.getElementById('categoria_filter').value;
+            
+            try {
+                const url = categoria ? `/api/servicios-taller/categoria?categoria=${encodeURIComponent(categoria)}` : '/api/servicios-taller/';
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    serviciosDisponibles = data.data;
+                    mostrarServicios(serviciosDisponibles);
+                } else {
+                    console.error('Error al filtrar:', data.message);
+                }
+            } catch (error) {
+                console.error('Error en la petición:', error);
+            }
+        }
+
+        /**
+         * Filtrar piezas por categoría
+         */
+        async function filtrarPiezasPorCategoria() {
+            const categoria = document.getElementById('categoria_pieza_filter').value;
+            
+            try {
+                const url = categoria ? `/api/piezas-taller/categoria?categoria=${encodeURIComponent(categoria)}` : '/api/piezas-taller/';
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    piezasDisponibles = data.data;
+                    mostrarPiezas(piezasDisponibles);
+                } else {
+                    console.error('Error al filtrar piezas:', data.message);
+                }
+            } catch (error) {
+                console.error('Error en la petición:', error);
+            }
+        }
+
+        /**
+         * Cargar servicios recomendados
+         */
+        async function cargarRecomendados() {
+            const vehiculoSelect = document.getElementById('vehiculo_id');
+            if (!vehiculoSelect.value) {
+                alert('Por favor seleccione un vehículo primero');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/servicios-taller/recomendados?tipo_vehiculo=auto&kilometraje=50000`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    serviciosDisponibles = data.data;
+                    mostrarServicios(serviciosDisponibles);
+                    
+                    // Actualizar el filtro para mostrar que estamos viendo recomendados
+                    document.getElementById('categoria_filter').value = '';
+                    document.getElementById('servicio_search').value = '';
+                } else {
+                    console.error('Error al cargar recomendados:', data.message);
+                }
+            } catch (error) {
+                console.error('Error en la petición:', error);
+            }
+        }
+
+        /**
+         * Mostrar servicios en el select
+         */
+        function mostrarServicios(servicios) {
+            const select = document.getElementById('servicio_select');
+            if (!select) {
+                console.error('No se encontró el select de servicios');
+                return;
+            }
+            
+            select.innerHTML = '<option value="">Seleccione un servicio</option>';
+            
+            if (servicios.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No se encontraron servicios';
+                option.disabled = true;
+                select.appendChild(option);
+                return;
+            }
+            
+            servicios.forEach(servicio => {
+                const option = document.createElement('option');
+                option.value = servicio.id;
+                option.setAttribute('data-precio', servicio.precio);
+                option.setAttribute('data-descripcion', servicio.descripcion);
+                option.setAttribute('data-categoria', servicio.categoria);
+                option.textContent = `${servicio.nombre} - $${parseFloat(servicio.precio).toFixed(2)} (${servicio.categoria})`;
+                select.appendChild(option);
+            });
+            
+            console.log(`Mostrando ${servicios.length} servicios en el select`);
+        }
+
+        /**
+         * Mostrar piezas en el select
+         */
+        function mostrarPiezas(piezas) {
+            const select = document.getElementById('pieza_select');
+            if (!select) {
+                console.error('No se encontró el select de piezas');
+                return;
+            }
+            
+            select.innerHTML = '<option value="">Seleccione una pieza</option>';
+            
+            if (piezas.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No se encontraron piezas';
+                option.disabled = true;
+                select.appendChild(option);
+                return;
+            }
+            
+            piezas.forEach(pieza => {
+                const option = document.createElement('option');
+                option.value = pieza.id;
+                option.setAttribute('data-precio', pieza.precio);
+                option.setAttribute('data-marca', pieza.marca);
+                option.setAttribute('data-categoria', pieza.categoria);
+                option.setAttribute('data-stock', pieza.stock);
+                
+                // Mostrar información relevante en el texto de la opción
+                const stockText = pieza.stock > 0 ? `(${pieza.stock} disponible)` : '(Sin stock)';
+                const disponibilidadText = pieza.disponibilidad === 'disponible' ? '' : ' - No disponible';
+                
+                option.textContent = `${pieza.nombre} - ${pieza.marca} - $${parseFloat(pieza.precio).toFixed(2)} ${stockText}${disponibilidadText}`;
+                
+                // Deshabilitar si no hay stock o no está disponible
+                if (pieza.stock <= 0 || pieza.disponibilidad !== 'disponible') {
+                    option.disabled = true;
+                    option.style.color = '#999';
+                }
+                
+                select.appendChild(option);
+            });
+            
+            console.log(`Mostrando ${piezas.length} piezas en el select`);
+        }
 
         /**
          * Agregar un servicio a la orden
@@ -244,11 +503,16 @@
         function agregarServicio() {
             const select = document.getElementById('servicio_select');
             const servicioId = select.value;
-            const servicioTexto = select.options[select.selectedIndex].text;
-            const precio = parseFloat(select.options[select.selectedIndex].getAttribute('data-precio'));
-
+            
             if (!servicioId) {
                 alert('Por favor seleccione un servicio');
+                return;
+            }
+
+            // Buscar el servicio en los disponibles
+            const servicio = serviciosDisponibles.find(s => s.id == servicioId);
+            if (!servicio) {
+                alert('Servicio no encontrado');
                 return;
             }
 
@@ -261,8 +525,9 @@
             // Agregar al array
             serviciosSeleccionados.push({
                 id: servicioId,
-                nombre: servicioTexto.split(' - ')[0],
-                precio: precio
+                nombre: servicio.nombre,
+                precio: parseFloat(servicio.precio),
+                categoria: servicio.categoria
             });
 
             // Actualizar vista
@@ -280,8 +545,6 @@
             const select = document.getElementById('pieza_select');
             const cantidadInput = document.getElementById('cantidad_pieza');
             const piezaId = select.value;
-            const piezaTexto = select.options[select.selectedIndex].text;
-            const precio = parseFloat(select.options[select.selectedIndex].getAttribute('data-precio'));
             const cantidad = parseInt(cantidadInput.value) || 1;
 
             if (!piezaId) {
@@ -289,16 +552,48 @@
                 return;
             }
 
+            // Buscar la pieza en los disponibles
+            const pieza = piezasDisponibles.find(p => p.id == piezaId);
+            if (!pieza) {
+                alert('Pieza no encontrada');
+                return;
+            }
+
+            // Verificar stock
+            if (pieza.stock <= 0) {
+                alert('Esta pieza no tiene stock disponible');
+                return;
+            }
+
+            // Verificar disponibilidad
+            if (pieza.disponibilidad !== 'disponible') {
+                alert('Esta pieza no está disponible');
+                return;
+            }
+
             // Verificar si ya está agregada
             const piezaExistente = piezasSeleccionadas.find(p => p.id == piezaId);
             if (piezaExistente) {
+                // Verificar que no exceda el stock
+                if (piezaExistente.cantidad + cantidad > pieza.stock) {
+                    alert(`No hay suficiente stock. Stock disponible: ${pieza.stock}, ya agregado: ${piezaExistente.cantidad}`);
+                    return;
+                }
                 piezaExistente.cantidad += cantidad;
             } else {
+                // Verificar que no exceda el stock
+                if (cantidad > pieza.stock) {
+                    alert(`No hay suficiente stock. Stock disponible: ${pieza.stock}`);
+                    return;
+                }
+                
                 piezasSeleccionadas.push({
                     id: piezaId,
-                    nombre: piezaTexto.split(' - ')[0],
-                    precio: precio,
-                    cantidad: cantidad
+                    nombre: pieza.nombre,
+                    marca: pieza.marca,
+                    precio: parseFloat(pieza.precio),
+                    cantidad: cantidad,
+                    categoria: pieza.categoria
                 });
             }
 
@@ -340,11 +635,14 @@
                 const div = document.createElement('div');
                 div.className = 'flex justify-between items-center p-2 bg-blue-50 rounded border';
                 div.innerHTML = `
-                    <span>${servicio.nombre}</span>
+                    <div>
+                        <span class="font-medium">${servicio.nombre}</span>
+                        <span class="text-sm text-gray-500 ml-2">(${servicio.categoria})</span>
+                    </div>
                     <div class="flex items-center gap-2">
                         <span class="font-medium">$${servicio.precio.toFixed(2)}</span>
                         <button type="button" onclick="eliminarServicio(${servicio.id})" 
-                                class="text-red-600 hover:text-red-800">
+                                class="text-red-600 hover:text-red-800 text-xl">
                             ×
                         </button>
                     </div>
@@ -367,11 +665,14 @@
                 const div = document.createElement('div');
                 div.className = 'flex justify-between items-center p-2 bg-green-50 rounded border';
                 div.innerHTML = `
-                    <span>${pieza.nombre} (x${pieza.cantidad})</span>
+                    <div>
+                        <span class="font-medium">${pieza.nombre}</span>
+                        <span class="text-sm text-gray-500 ml-2">(${pieza.marca} - x${pieza.cantidad})</span>
+                    </div>
                     <div class="flex items-center gap-2">
                         <span class="font-medium">$${(pieza.precio * pieza.cantidad).toFixed(2)}</span>
                         <button type="button" onclick="eliminarPieza(${pieza.id})" 
-                                class="text-red-600 hover:text-red-800">
+                                class="text-red-600 hover:text-red-800 text-xl">
                             ×
                         </button>
                     </div>
@@ -473,3 +774,4 @@
             document.getElementById('partstech_results').innerHTML = '';
         }
     </script>
+</x-app-layout>

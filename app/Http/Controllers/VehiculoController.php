@@ -48,9 +48,11 @@ class VehiculoController extends Controller
             'cliente_id' => 'required|exists:clientes,id', // Debe existir un cliente con ese ID
             'marca' => 'required|string|max:255',
             'modelo' => 'required|string|max:255',
-            'ano' => 'nullable|integer|min:1900|max:' . (date('Y') + 1), // Año válido
+            'año' => 'nullable|integer|min:1900|max:' . (date('Y') + 1), // Año válido
             'matricula' => 'required|string|max:20|unique:vehiculos', // Matrícula única
             'color' => 'nullable|string|max:50',
+            'combustible' => 'nullable|string|max:50',
+            'kilometraje' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -90,9 +92,11 @@ class VehiculoController extends Controller
             'cliente_id' => 'required|exists:clientes,id',
             'marca' => 'required|string|max:255',
             'modelo' => 'required|string|max:255',
-            'ano' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
+            'año' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
             'matricula' => 'required|string|max:20|unique:vehiculos,matricula,' . $vehiculo->id, // Matrícula única, excepto para el vehículo actual
             'color' => 'nullable|string|max:50',
+            'combustible' => 'nullable|string|max:50',
+            'kilometraje' => 'nullable|integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -111,8 +115,11 @@ class VehiculoController extends Controller
      */
     public function destroy(Vehiculo $vehiculo)
     {
-        $vehiculo->delete();
-
-        return redirect()->route('vehiculos.index')->with('success', 'Vehículo eliminado exitosamente.');
+        try {
+            $vehiculo->delete();
+            return redirect()->route('vehiculos.index')->with('success', 'Vehículo eliminado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('vehiculos.index')->with('error', 'No se pudo eliminar el vehículo. Puede que tenga órdenes de servicio asociadas.');
+        }
     }
 }

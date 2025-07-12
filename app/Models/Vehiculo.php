@@ -17,9 +17,11 @@ class Vehiculo extends Model
         'cliente_id', // Para la relación con el cliente
         'marca',
         'modelo',
-        'ano',
+        'año',
         'matricula',
         'color',
+        'combustible',
+        'kilometraje',
     ];
 
     /**

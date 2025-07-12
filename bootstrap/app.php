@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(\App\Http\Middleware\LogDeleteRequests::class);
+        $middleware->alias([
+            'admin.only' => \App\Http\Middleware\AdminOnly::class,
+            'mecanico.only' => \App\Http\Middleware\MecanicoOnly::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

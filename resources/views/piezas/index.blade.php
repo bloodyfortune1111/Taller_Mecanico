@@ -1,53 +1,70 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 rounded-lg shadow-md p-4 mx-6 header-container">
-            <h2 class="font-bold text-xl leading-tight flex items-center text-white" style="color: white !important;">
-                <svg class="w-6 h-6 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: white !important;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 7.172V5L8 4z"></path>
-                </svg>
-                {{ __('Catálogo de Piezas') }}
-            </h2>
-            <p class="text-white mt-1 text-sm" style="color: white !important;">Gestiona tu inventario de piezas y repuestos</p>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-gradient-to-r from-purple-600 to-blue-700 rounded-xl">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 7.172V5L8 4z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">
+                        {{ __('Catálogo de Piezas') }}
+                    </h2>
+                    <p class="text-gray-600">Gestiona tu inventario de piezas y repuestos</p>
+                </div>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-6">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Panel de estadísticas compacto -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-md p-4 stats-card">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-white bg-opacity-20 rounded-lg">
-                            <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-semibold text-black">Total Piezas</h3>
-                            <p class="text-xl font-bold text-black">{{ $piezasLocales->total() }}</p>
-                        </div>
+            <!-- Panel de estadísticas -->
+            <div class="dashboard-stats mb-8">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
                     </div>
+                    <div class="stat-title">Total Piezas</div>
+                    <div class="stat-value">{{ $piezasLocales->total() }}</div>
+                    <div class="stat-change positive">Inventario</div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-md p-4 stats-card">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-white bg-opacity-20 rounded-lg">
-                            <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-semibold text-black">En Stock</h3>
-                            <p class="text-xl font-bold text-black">{{ $piezasLocales->where('stock', '>', 0)->count() }}</p>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                     </div>
+                    <div class="stat-title">En Stock</div>
+                    <div class="stat-value">{{ $piezasLocales->where('stock', '>', 0)->count() }}</div>
+                    <div class="stat-change positive">Disponibles</div>
                 </div>
                 
-                <div class="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg shadow-md p-4 stats-card">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-white bg-opacity-20 rounded-lg">
-                            <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-title">Stock Bajo</div>
+                    <div class="stat-value">{{ $piezasLocales->where('stock', '<', 10)->count() }}</div>
+                    <div class="stat-change negative">Reabastecer</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <div class="stat-title">Valor Inventario</div>
+                    <div class="stat-value">${{ number_format($piezasLocales->sum(function($p) { return $p->precio * $p->stock; }), 2) }}</div>
+                    <div class="stat-change positive">Total</div>
+                </div>
+            </div>
                             </svg>
                         </div>
                         <div class="ml-3">

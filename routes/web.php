@@ -92,18 +92,6 @@ Route::middleware(['auth', 'admin.only'])->group(function () {
         Route::get('/{id}', [App\Http\Controllers\Api\ServicioApiController::class, 'show'])->name('show');
     });
     
-    // Rutas API para piezas propias del taller
-    Route::prefix('api/piezas-taller')->name('api.piezas-taller.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Api\PiezaApiController::class, 'index'])->name('index');
-        Route::get('/categoria', [App\Http\Controllers\Api\PiezaApiController::class, 'porCategoria'])->name('categoria');
-        Route::get('/buscar', [App\Http\Controllers\Api\PiezaApiController::class, 'buscar'])->name('buscar');
-        Route::get('/marca', [App\Http\Controllers\Api\PiezaApiController::class, 'porMarca'])->name('marca');
-        Route::get('/categorias', [App\Http\Controllers\Api\PiezaApiController::class, 'categorias'])->name('categorias');
-        Route::get('/marcas', [App\Http\Controllers\Api\PiezaApiController::class, 'marcas'])->name('marcas');
-        Route::get('/estadisticas', [App\Http\Controllers\Api\PiezaApiController::class, 'estadisticas'])->name('estadisticas');
-        Route::get('/{id}', [App\Http\Controllers\Api\PiezaApiController::class, 'show'])->name('show');
-    });
-    
     // Rutas específicas para PartsTech API
     Route::post('/piezas/search-partstech', [PiezaController::class, 'searchPartsTech'])->name('piezas.search-partstech');
     Route::post('/piezas/import-partstech', [PiezaController::class, 'importFromPartsTech'])->name('piezas.import-partstech');

@@ -1,4 +1,39 @@
-/* Estilos personalizados para el Taller Mecánico */
+/* === ESTILOS PERSONALIZADOS PARA GEARSMOTORS === */
+
+/* Paleta de colores personalizada */
+:root {
+    --primary-dark: #0f172a;
+    --primary: #1e40af;
+    --primary-light: #3b82f6;
+    --accent: #60a5fa;
+    --white: #ffffff;
+    --gray-light: #f8fafc;
+    --gray-medium: #e2e8f0;
+    --shadow-primary: 0 10px 25px -3px rgba(30, 64, 175, 0.1);
+    --shadow-dark: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --gradient-primary: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* Efectos glassmorphism para modales */
+.modal-backdrop {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Animaciones para la navegación */
+.navigation-spacing {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .navigation-spacing {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
 
 /* Estilos para navegación */
 .nav-item {

@@ -32,8 +32,21 @@ Route::get('/test-css', function () {
     return view('test-css');
 });
 
+// Rutas de autenticación para mecánicos
+Route::prefix('mecanico')->name('mecanico.')->group(function () {
+    // Rutas para invitados (no autenticados)
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [App\Http\Controllers\Auth\MecanicoAuthController::class, 'showLoginForm'])
+            ->name('login');
+        Route::post('/login', [App\Http\Controllers\Auth\MecanicoAuthController::class, 'login'])
+            ->name('login.post');
+    });
+});
+
 // Rutas específicas para mecánicos (accesibles después del login unificado)
 Route::prefix('mecanico')->name('mecanico.')->middleware(['auth', 'mecanico.only'])->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\MecanicoController::class, 'dashboard'])
+        ->name('dashboard');
     Route::get('/orden/{id}', [App\Http\Controllers\MecanicoController::class, 'verOrden'])
         ->name('orden');
     Route::post('/orden/{id}/estado', [App\Http\Controllers\MecanicoController::class, 'actualizarEstado'])
@@ -42,6 +55,10 @@ Route::prefix('mecanico')->name('mecanico.')->middleware(['auth', 'mecanico.only
     // Mecánicos pueden ver las órdenes asignadas y actualizar estados
     Route::get('/ordenes-servicio', [OrdenServicioController::class, 'index'])->name('ordenes.index');
     Route::get('/ordenes-servicio/{ordenes_servicio}', [OrdenServicioController::class, 'show'])->name('ordenes.show');
+    
+    // Ruta de logout para mecánicos
+    Route::post('/logout', [App\Http\Controllers\Auth\MecanicoAuthController::class, 'logout'])
+        ->name('logout');
 });
 
 // Rutas específicas para recepcionistas (accesibles después del login unificado)

@@ -70,10 +70,7 @@
 
                 <div class="mt-6 text-center">
                     <p class="text-sm text-gray-600">
-                        ¿Eres mecánico? 
-                        <a href="{{ route('mecanico.login') }}" class="text-primary-600 hover:text-primary-500 font-medium">
-                            Accede a tu panel aquí
-                        </a>
+                        Sistema unificado para todos los roles: Admin, Mecánico y Recepcionista
                     </p>
                 </div>
             </div>

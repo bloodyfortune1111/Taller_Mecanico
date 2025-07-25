@@ -58,6 +58,6 @@ class MecanicoAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         
-        return redirect()->route('mecanico.login');
+        return redirect()->route('login');
     }
 }

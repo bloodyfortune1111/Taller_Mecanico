@@ -18,16 +18,15 @@ class MecanicoOnly
     {
         // Verificar si el usuario está autenticado
         if (!Auth::check()) {
-            return redirect()->route('mecanico.login');
+            return redirect()->route('login');
         }
 
         $user = Auth::user();
         
         // Verificar si es un mecánico
         if ($user->role !== 'mecanico') {
-            Auth::logout();
-            return redirect()->route('mecanico.login')->withErrors([
-                'email' => 'Acceso denegado. Solo los mecánicos pueden acceder a este panel.'
+            return redirect()->route('dashboard')->withErrors([
+                'access' => 'Acceso denegado. Solo los mecánicos pueden acceder a esta sección.'
             ]);
         }
 

@@ -124,12 +124,22 @@
                             <p class="text-gray-600 mt-1">Gestiona tu inventario de piezas y repuestos</p>
                         </div>
                         <div class="flex space-x-3">
+                            @if(auth()->user()->role === 'admin')
                             <a href="{{ route('piezas.create') }}" class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 border border-transparent rounded-xl font-semibold text-sm text-white uppercase tracking-wider hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl btn-glow">
                                 <svg class="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
                                 Nueva Pieza
                             </a>
+                            @else
+                            <span class="inline-flex items-center px-6 py-3 bg-gray-100 border border-gray-300 rounded-xl font-semibold text-sm text-gray-500 uppercase tracking-wider">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                Solo Consulta
+                            </span>
+                            @endif
                             
                             <button onclick="openPartsSearchModal()" class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 border border-transparent rounded-xl font-semibold text-sm text-white uppercase tracking-wider hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl btn-glow">
                                 <svg class="w-5 h-5 mr-2 icon-hover" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -348,6 +358,7 @@
                                             </svg>
                                             Ver
                                         </a>
+                                        @if(auth()->user()->role === 'admin')
                                         <a href="{{ route('piezas.edit', $pieza) }}" 
                                            class="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-center py-2 px-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg btn-glow">
                                             <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -368,6 +379,7 @@
                                                 Eliminar
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -382,7 +394,14 @@
                                 </svg>
                             </div>
                             <h3 class="text-lg font-medium text-gray-900 mb-2">No se encontraron piezas</h3>
-                            <p class="text-gray-500 mb-6">Comienza agregando tu primera pieza al inventario.</p>
+                            <p class="text-gray-500 mb-6">
+                                @if(auth()->user()->role === 'admin')
+                                    Comienza agregando tu primera pieza al inventario.
+                                @else
+                                    No hay piezas registradas en el sistema.
+                                @endif
+                            </p>
+                            @if(auth()->user()->role === 'admin')
                             <a href="{{ route('piezas.create') }}" 
                                class="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 btn-glow">
                                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -390,6 +409,15 @@
                                 </svg>
                                 Agregar Primera Pieza
                             </a>
+                            @else
+                            <span class="inline-flex items-center px-6 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-500 bg-gray-100">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                Solo Consulta
+                            </span>
+                            @endif
                         </div>
                     @endforelse
 

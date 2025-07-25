@@ -23,7 +23,7 @@
                     <span class="text-gray-700">
                         Hola, <strong>{{ Auth::user()->name }}</strong>
                     </span>
-                    <form method="POST" action="{{ route('mecanico.logout') }}" class="inline">
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
                         <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm">
                             Cerrar Sesión

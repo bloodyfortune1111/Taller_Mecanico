@@ -13,11 +13,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Crear usuario administrador
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin Alex',
+            'email' => 'AdminAlex@taller.com',
+            'role' => 'admin'
+        ]);
+
+        // Crear usuario mecánico
+        User::factory()->create([
+            'name' => 'Juan Mecánico',
+            'email' => 'mecanico@taller.com', 
+            'role' => 'mecanico'
+        ]);
+
+        // Crear usuario recepcionista
+        User::factory()->create([
+            'name' => 'María Recepcionista',
+            'email' => 'recepcionista@taller.com',
+            'role' => 'recepcionista'
+        ]);
+
+        // Ejecutar seeders de datos
+        $this->call([
+            ServiciosSeeder::class,
+            PiezasSeeder::class,
+            ClientesSeeder::class,
+            VehiculosSeeder::class,
+            OrdenesServicioSeeder::class,
         ]);
     }
 }

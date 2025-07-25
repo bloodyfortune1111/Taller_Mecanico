@@ -73,14 +73,30 @@
                                 <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full mr-3"></div>
                                 Lista de Servicios
                             </h3>
-                            <p class="text-gray-600 mt-1 text-sm">Administra y gestiona todos los servicios disponibles</p>
+                            <p class="text-gray-600 mt-1 text-sm">
+                                @if(auth()->user()->role === 'admin')
+                                    Administra y gestiona todos los servicios disponibles
+                                @else
+                                    Consulta el catálogo de servicios disponibles
+                                @endif
+                            </p>
                         </div>
-                        <a href="{{ route('servicios.create') }}" class="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-wider hover:from-blue-700 hover:to-indigo-700 active:from-blue-800 active:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg">
-                            <svg class="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
-                            Nuevo Servicio
-                        </a>
+                        @if(auth()->user()->role === 'admin')
+                            <a href="{{ route('servicios.create') }}" class="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-wider hover:from-blue-700 hover:to-indigo-700 active:from-blue-800 active:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg">
+                                <svg class="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                Nuevo Servicio
+                            </a>
+                        @else
+                            <div class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                Solo Consulta
+                            </div>
+                        @endif
                     </div>
 
                     @if (session('success'))
@@ -113,13 +129,17 @@
                                 </svg>
                             </div>
                             <h3 class="text-xl font-medium text-gray-900 mb-2">No hay servicios registrados</h3>
-                            <p class="text-gray-500 mb-6">Comienza agregando tu primer servicio al catálogo</p>
-                            <a href="{{ route('servicios.create') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                </svg>
-                                Crear Primer Servicio
-                            </a>
+                            @if(auth()->user()->role === 'admin')
+                                <p class="text-gray-500 mb-6">Comienza agregando tu primer servicio al catálogo</p>
+                                <a href="{{ route('servicios.create') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Crear Primer Servicio
+                                </a>
+                            @else
+                                <p class="text-gray-500">El catálogo de servicios está vacío</p>
+                            @endif
                         </div>
                     @else
                         <!-- Vista de tarjetas moderna -->
@@ -185,6 +205,7 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                                     </svg>
                                                 </a>
+                                                @if(auth()->user()->role === 'admin')
                                                 <a href="{{ route('servicios.edit', $servicio) }}" 
                                                    class="p-2 text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all duration-200"
                                                    title="Editar">
@@ -203,6 +224,7 @@
                                                         </svg>
                                                     </button>
                                                 </form>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

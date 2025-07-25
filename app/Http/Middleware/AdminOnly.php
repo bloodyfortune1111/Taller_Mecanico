@@ -23,11 +23,10 @@ class AdminOnly
 
         $user = Auth::user();
         
-        // Verificar si es el administrador autorizado
-        if ($user->role !== 'admin' || $user->email !== 'AdminAlex@taller.com') {
-            Auth::logout();
+        // Verificar si es un administrador (cualquier usuario con rol admin)
+        if ($user->role !== 'admin') {
             return redirect()->route('login')->withErrors([
-                'email' => 'Acceso denegado. Solo el administrador puede acceder al sistema.'
+                'email' => 'Acceso denegado. Solo los administradores pueden acceder a esta sección.'
             ]);
         }
 

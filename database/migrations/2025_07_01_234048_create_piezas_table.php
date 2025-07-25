@@ -25,6 +25,10 @@ return new class extends Migration
             $table->string('api_id')->nullable(); // ID en la API externa
             $table->json('api_data')->nullable(); // Datos adicionales de la API
             $table->boolean('activo')->default(true);
+            $table->string('disponibilidad')->default('En stock'); // Estado de disponibilidad
+            $table->string('external_id')->nullable(); // ID externo para API
+            $table->string('imagen_url')->nullable(); // URL de la imagen
+            $table->json('especificaciones')->nullable(); // Especificaciones técnicas
             $table->timestamps();
             
             // Índices para búsqueda

@@ -26,12 +26,14 @@
                                <h3 class="card-title">Lista de Vehículos</h3>
                                <p class="card-subtitle">Gestiona todos los vehículos registrados</p>
                            </div>
+                           @if(in_array(auth()->user()->role, ['admin', 'recepcionista']))
                            <a href="{{ route('vehiculos.create') }}" class="btn btn-primary">
                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                </svg>
                                Nuevo Vehículo
                            </a>
+                           @endif
                        </div>
                    </div>
                    <div class="card-body">
@@ -51,13 +53,21 @@
                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                </svg>
                                <h3 class="text-lg font-medium text-gray-900 mb-2">No hay vehículos registrados</h3>
-                               <p class="text-gray-600 mb-6">Comienza agregando el primer vehículo al sistema</p>
+                               <p class="text-gray-600 mb-6">
+                                   @if(in_array(auth()->user()->role, ['admin', 'recepcionista']))
+                                       Comienza agregando el primer vehículo al sistema
+                                   @else
+                                       No hay vehículos registrados en el sistema
+                                   @endif
+                               </p>
+                               @if(in_array(auth()->user()->role, ['admin', 'recepcionista']))
                                <a href="{{ route('vehiculos.create') }}" class="btn btn-primary">
                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                    </svg>
                                    Agregar Vehículo
                                </a>
+                               @endif
                            </div>
                        @else
                            <div class="table-container">
@@ -113,6 +123,7 @@
                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                                            </svg>
                                                        </a>
+                                                       @if(auth()->user()->role === 'admin')
                                                        <a href="{{ route('vehiculos.edit', $vehiculo->id) }}" class="btn btn-warning" style="padding: 8px 12px; font-size: 0.75rem;">
                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -127,6 +138,7 @@
                                                                </svg>
                                                            </button>
                                                        </form>
+                                                       @endif
                                                    </div>
                                                </td>
                                            </tr>
@@ -159,10 +171,12 @@
                            class="btn btn-secondary"
                            x-on:click="open = false"
                        >No, gracias</button>
+                       @if(in_array(auth()->user()->role, ['admin', 'recepcionista']))
                        <a 
                            href="{{ route('vehiculos.create') }}"
                            class="btn btn-success"
                        >Sí, registrar auto</a>
+                       @endif
                    </div>
                </div>
            </div>

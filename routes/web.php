@@ -11,6 +11,7 @@ use App\Http\Controllers\OrdenServicioController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\PiezaController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\ReporteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,11 +26,6 @@ use App\Http\Controllers\FacturaController;
 
 Route::get('/', function () {
     return view('carrusel'); // Tu ruta de inicio personalizada
-});
-
-// Ruta temporal para prueba de CSS
-Route::get('/test-css', function () {
-    return view('test-css');
 });
 
 // Rutas de autenticación para mecánicos
@@ -144,28 +140,6 @@ Route::middleware(['auth', 'admin.only'])->group(function () {
     Route::post('/piezas/import-partstech', [PiezaController::class, 'importFromPartsTech'])->name('piezas.import-partstech');
     Route::get('/piezas/test-connection', [PiezaController::class, 'testPartsTechConnection'])->name('piezas.test-connection');
     
-    // Ruta de prueba para depurar eliminación (solo admin)
-    Route::get('/debug-delete/{id}', function($id) {
-        Log::info('=== RUTA DE PRUEBA DEBUG DELETE ===');
-        Log::info('ID recibido: ' . $id);
-        
-        $orden = \App\Models\OrdenServicio::find($id);
-        if (!$orden) {
-            Log::error('Orden no encontrada con ID: ' . $id);
-            return 'Orden no encontrada';
-        }
-        
-        try {
-            Log::info('Intentando eliminar orden desde ruta debug...');
-            $orden->delete();
-            Log::info('Orden eliminada exitosamente desde ruta debug');
-            return 'Orden eliminada exitosamente';
-        } catch (\Exception $e) {
-            Log::error('Error en ruta debug: ' . $e->getMessage());
-            return 'Error: ' . $e->getMessage();
-        }
-    })->name('debug.delete');
-    
     // Las rutas de facturas ya están definidas en el grupo de recepcionista
     // y son accesibles para ambos roles (admin y recepcionista)
 });
@@ -173,6 +147,15 @@ Route::middleware(['auth', 'admin.only'])->group(function () {
 // Rutas para administración, protegidas por autenticación y solo para administrador
 Route::middleware(['auth', 'admin.only'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+});
+
+// Rutas de reportes (accesibles para admin y recepcionista)
+Route::middleware(['auth'])->prefix('reportes')->name('reportes.')->group(function () {
+    Route::get('/', [App\Http\Controllers\ReporteController::class, 'index'])->name('index');
+    Route::get('/vehiculos-mes', [App\Http\Controllers\ReporteController::class, 'vehiculosPorMes'])->name('vehiculos-mes');
+    Route::get('/servicios-solicitados', [App\Http\Controllers\ReporteController::class, 'serviciosSolicitados'])->name('servicios-solicitados');
+    Route::get('/ingresos-mensuales', [App\Http\Controllers\ReporteController::class, 'ingresosMensuales'])->name('ingresos-mensuales');
+    Route::get('/ingresos-servicio', [App\Http\Controllers\ReporteController::class, 'ingresosPorServicio'])->name('ingresos-servicio');
 });
 
 require __DIR__.'/auth.php';

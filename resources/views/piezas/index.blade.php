@@ -44,14 +44,14 @@
                 </div>
                 
                 <div class="stat-card">
-                    <div class="stat-icon">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="stat-icon bg-gradient-to-r from-yellow-400 to-red-500 rounded-full p-2 shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                         </svg>
                     </div>
-                    <div class="stat-title">Stock Bajo</div>
-                    <div class="stat-value">{{ $piezasLocales->where('stock', '<', 10)->count() }}</div>
-                    <div class="stat-change negative">Reabastecer</div>
+                    <div class="stat-title font-bold text-lg text-red-700">Stock Bajo</div>
+                    <div class="stat-value text-3xl font-extrabold text-yellow-600 drop-shadow">{{ $piezasLocales->where('stock', '<', 10)->count() }}</div>
+                    <div class="stat-change negative font-semibold text-red-600">¡Reabastecer!</div>
                 </div>
                 
                 <div class="stat-card">
@@ -65,14 +65,7 @@
                     <div class="stat-change positive">Total</div>
                 </div>
             </div>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-semibold text-black">Stock Bajo</h3>
-                            <p class="text-xl font-bold text-black">{{ $piezasLocales->where('stock', '<=', 5)->where('stock', '>', 0)->count() }}</p>
-                        </div>
-                    </div>
-                </div>
+
                 
                 <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg shadow-md p-4 stats-card">
                     <div class="flex items-center">

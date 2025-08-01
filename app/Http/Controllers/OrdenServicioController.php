@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\OrdenServicio;
 use App\Models\Cliente;
 use App\Models\Vehiculo;
@@ -122,32 +123,38 @@ class OrdenServicioController extends Controller
     /**
      * Muestra los detalles de una orden de servicio específica.
      */
-    public function show(string $ordenServicio)
+    public function show(OrdenServicio $orden_servicio)
     {
-        $ordenServicio = OrdenServicio::with(['cliente', 'vehiculo', 'mecanico', 'servicios', 'piezas'])
-            ->findOrFail((int) $ordenServicio);
-        return view('ordenes-servicio.show', compact('ordenServicio'));
+        $orden_servicio->load(['cliente', 'vehiculo', 'mecanico', 'servicios', 'piezas']);
+        return view('ordenes-servicio.show', ['ordenServicio' => $orden_servicio]);
     }
 
-    /**
+        /**
      * Muestra el formulario para editar una orden de servicio existente.
      */
-    public function edit(OrdenServicio $ordenServicio)
+    public function edit(OrdenServicio $orden_servicio)
     {
-        $ordenServicio->load(['servicios', 'piezas']);
+        $orden_servicio->load(['servicios', 'piezas']);
         $clientes = Cliente::all();
         $vehiculos = Vehiculo::all();
         $mecanicos = User::all(); // Ajusta según tu lógica de roles si es necesario
         $servicios = Servicio::orderBy('nombre')->get();
         $piezas = Pieza::orderBy('nombre')->get();
         
-        return view('ordenes-servicio.edit', compact('ordenServicio', 'clientes', 'vehiculos', 'mecanicos', 'servicios', 'piezas'));
+        return view('ordenes-servicio.edit', [
+            'ordenServicio' => $orden_servicio,
+            'clientes' => $clientes,
+            'vehiculos' => $vehiculos,
+            'mecanicos' => $mecanicos,
+            'servicios' => $servicios,
+            'piezas' => $piezas
+        ]);
     }
 
     /**
      * Actualiza una orden de servicio existente en la base de datos.
      */
-    public function update(Request $request, OrdenServicio $ordenServicio)
+    public function update(Request $request, OrdenServicio $orden_servicio)
     {
         $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
@@ -182,13 +189,13 @@ class OrdenServicioController extends Controller
             
             $data['pagado'] = $request->has('pagado');
             
-            $ordenServicio->update($data);
+            $orden_servicio->update($data);
 
             // Sincronizar servicios
             if ($request->has('servicios') && is_array($request->servicios)) {
-                $ordenServicio->servicios()->sync($request->servicios);
+                $orden_servicio->servicios()->sync($request->servicios);
             } else {
-                $ordenServicio->servicios()->sync([]);
+                $orden_servicio->servicios()->sync([]);
             }
 
             // Sincronizar piezas con cantidades
@@ -199,18 +206,18 @@ class OrdenServicioController extends Controller
                         $piezasData[$pieza['id']] = ['cantidad' => $pieza['cantidad']];
                     }
                 }
-                $ordenServicio->piezas()->sync($piezasData);
+                $orden_servicio->piezas()->sync($piezasData);
             } else {
-                $ordenServicio->piezas()->sync([]);
+                $orden_servicio->piezas()->sync([]);
             }
 
             // Recalcular el costo total basado en servicios y piezas seleccionados
-            $costoCalculado = $ordenServicio->calcularCostoTotal();
-            $ordenServicio->update(['costo_total' => $costoCalculado]);
+            $costoCalculado = $orden_servicio->calcularCostoTotal();
+            $orden_servicio->update(['costo_total' => $costoCalculado]);
 
             DB::commit();
             
-            return redirect()->route('ordenes-servicio.show', $ordenServicio)
+            return redirect()->route('ordenes-servicio.show', ['orden_servicio' => $orden_servicio->id])
                 ->with('success', 'Orden de servicio actualizada exitosamente.');
                 
         } catch (\Exception $e) {
@@ -225,25 +232,14 @@ class OrdenServicioController extends Controller
     /**
      * Elimina una orden de servicio específica de la base de datos.
      */
-    public function destroy(string $id)
+    public function destroy(OrdenServicio $orden_servicio)
     {
-        // Log muy específico para saber si el método se ejecuta
         Log::info('=== MÉTODO DESTROY EJECUTADO ===');
-        Log::info('ID recibido como string: ' . $id);
-        
+        Log::info('ID recibido: ' . $orden_servicio->id);
         try {
-            // Buscar la orden manualmente
-            $ordenServicio = OrdenServicio::findOrFail($id);
-            Log::info('Orden encontrada: ' . json_encode($ordenServicio->toArray()));
-            Log::info('Intentando eliminar orden ID: ' . $ordenServicio->id);
-            
-            $ordenServicio->delete();
+            $orden_servicio->delete();
             Log::info('Orden eliminada exitosamente');
             return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio eliminada exitosamente.');
-            
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            Log::error('Orden no encontrada con ID: ' . $id);
-            return redirect()->route('ordenes-servicio.index')->with('error', 'Error: No se pudo encontrar la orden de servicio.');
         } catch (\Exception $e) {
             Log::error('Error al eliminar orden: ' . $e->getMessage());
             Log::error('Trace: ' . $e->getTraceAsString());

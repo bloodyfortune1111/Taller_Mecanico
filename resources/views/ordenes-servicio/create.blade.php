@@ -5,65 +5,112 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Formulario de Nueva Orden de Servicio</h3>
+    <div class="py-12 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+            <div class="card fade-in shadow-xl">
+                <div class="card-header mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="card-title text-xl font-bold text-gray-900">Formulario de Nueva Orden de Servicio</h3>
+                            <p class="card-subtitle text-gray-600">Completa la información para registrar la orden</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-6 text-gray-900">
 
                     <form action="{{ route('ordenes-servicio.store') }}" method="POST">
                         @csrf
 
-                        <div class="mb-4">
-                            <label for="cliente_id" class="block text-sm font-medium text-gray-700">Cliente</label>
-                            <select name="cliente_id" id="cliente_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <div class="mb-4 form-group">
+                            <label for="cliente_id" class="form-label font-semibold text-gray-700 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                Cliente
+                            </label>
+                            <select name="cliente_id" id="cliente_id" required class="form-select mt-1 block w-full rounded-lg border-gray-300 shadow focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                 <option value="">Seleccione un cliente</option>
                                 @foreach($clientes as $cliente)
                                     <option value="{{ $cliente->id }}" {{ old('cliente_id') == $cliente->id ? 'selected' : '' }}>{{ $cliente->nombre }} {{ $cliente->apellido }}</option>
                                 @endforeach
                             </select>
                             @error('cliente_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
 
-                        <div class="mb-4">
-                            <label for="vehiculo_id" class="block text-sm font-medium text-gray-700">Vehículo</label>
-                            <select name="vehiculo_id" id="vehiculo_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <div class="mb-4 form-group">
+                            <label for="vehiculo_id" class="form-label font-semibold text-gray-700 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7"></path>
+                                </svg>
+                                Vehículo
+                            </label>
+                            <select name="vehiculo_id" id="vehiculo_id" required class="form-select mt-1 block w-full rounded-lg border-gray-300 shadow focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                 <option value="">Seleccione un vehículo</option>
                                 @foreach($vehiculos as $vehiculo)
                                     <option value="{{ $vehiculo->id }}" {{ old('vehiculo_id') == $vehiculo->id ? 'selected' : '' }}>{{ $vehiculo->marca }} {{ $vehiculo->modelo }} ({{ $vehiculo->matricula }})</option>
                                 @endforeach
                             </select>
                             @error('vehiculo_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
 
-                        <div class="mb-4">
-                            <label for="mecanico_id" class="block text-sm font-medium text-gray-700">Mecánico Asignado</label>
-                            <select name="mecanico_id" id="mecanico_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        <div class="mb-4 form-group">
+                            <label for="mecanico_id" class="form-label font-semibold text-gray-700 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                                Mecánico Asignado
+                            </label>
+                            <select name="mecanico_id" id="mecanico_id" class="form-select mt-1 block w-full rounded-lg border-gray-300 shadow focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                 <option value="">Sin Asignar</option>
                                 @foreach($mecanicos as $mecanico)
                                     <option value="{{ $mecanico->id }}" {{ old('mecanico_id') == $mecanico->id ? 'selected' : '' }}>{{ $mecanico->name }}</option>
                                 @endforeach
                             </select>
                             @error('mecanico_id')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
 
-                        <div class="mb-4">
-                            <label for="diagnostico" class="block text-sm font-medium text-gray-700">Diagnóstico</label>
-                            <textarea name="diagnostico" id="diagnostico" rows="4" placeholder="Ingrese el diagnóstico del problema..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('diagnostico') }}</textarea>
+                        <div class="mb-4 form-group">
+                            <label for="diagnostico" class="form-label font-semibold text-gray-700 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                                Diagnóstico
+                            </label>
+                            <textarea name="diagnostico" id="diagnostico" rows="4" placeholder="Ingrese el diagnóstico del problema..." class="form-input mt-1 block w-full rounded-lg border-gray-300 shadow focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('diagnostico') }}</textarea>
                             @error('diagnostico')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
 
                         <!-- Sección de Servicios -->
-                        <div class="mb-6 p-4 border border-gray-200 rounded-lg">
-                            <h4 class="text-md font-medium text-gray-800 mb-4">Servicios a Realizar</h4>
+                        <div class="mb-6 p-4 border border-blue-200 bg-blue-50 rounded-xl shadow">
+                            <h4 class="text-md font-bold text-blue-800 mb-4 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a2 2 0 012-2h6"></path></svg>
+                                Servicios a Realizar
+                            </h4>
                             
                             <div class="mb-4">
                                 <label for="servicio_search" class="block text-sm font-medium text-gray-700">Buscar y Agregar Servicio</label>
@@ -116,8 +163,11 @@
                         </div>
 
                         <!-- Sección de Piezas -->
-                        <div class="mb-6 p-4 border border-gray-200 rounded-lg">
-                            <h4 class="text-md font-medium text-gray-800 mb-4">Piezas y Repuestos</h4>
+                        <div class="mb-6 p-4 border border-green-200 bg-green-50 rounded-xl shadow">
+                            <h4 class="text-md font-bold text-green-800 mb-4 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Piezas y Repuestos
+                            </h4>
                             
                             <div class="mb-4">
                                 <label for="pieza_select" class="block text-sm font-medium text-gray-700">Agregar Pieza</label>
@@ -159,59 +209,88 @@
                             </div>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="descripcion_problema" class="block text-sm font-medium text-gray-700">Descripción del Problema</label>
-                            <textarea name="descripcion_problema" id="descripcion_problema" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ old('descripcion_problema') }}</textarea>
+                        <div class="mb-4 form-group">
+                            <label for="descripcion_problema" class="form-label font-semibold text-gray-700 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a5 5 0 00-10 0v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2z"></path>
+                                </svg>
+                                Descripción del Problema
+                            </label>
+                            <textarea name="descripcion_problema" id="descripcion_problema" rows="4" class="form-input mt-1 block w-full rounded-lg border-gray-300 shadow focus:border-pink-400 focus:ring focus:ring-pink-200 focus:ring-opacity-50">{{ old('descripcion_problema') }}</textarea>
                             @error('descripcion_problema')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
 
                         <div class="mb-4">
-                            <label for="costo_total" class="block text-sm font-medium text-gray-700">Costo Total ($)</label>
-                            <div class="mt-1 p-3 bg-gray-50 rounded-md border border-gray-300">
-                                <div class="text-lg font-semibold text-gray-800">
+                            <label for="costo_total" class="block text-sm font-bold text-indigo-700 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 0V4m0 10v4"></path>
+                                </svg>
+                                Costo Total ($)
+                            </label>
+                            <div class="mt-1 p-3 bg-indigo-50 rounded-lg border border-indigo-200 shadow">
+                                <div class="text-lg font-semibold text-indigo-800">
                                     Total: $<span id="costo_total_display">0.00</span>
                                 </div>
-                                <div class="text-sm text-gray-600 mt-1">
+                                <div class="text-sm text-indigo-600 mt-1">
                                     Servicios: $<span id="total_servicios">0.00</span> | 
                                     Piezas: $<span id="total_piezas">0.00</span>
                                 </div>
                             </div>
                             <input type="hidden" name="costo_total" id="costo_total" value="0.00">
                             @error('costo_total')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
 
                         <div class="mb-4">
-                            <label for="estado" class="block text-sm font-medium text-gray-700">Estado</label>
-                            <select name="estado" id="estado" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <label for="estado" class="block text-sm font-bold text-gray-700 flex items-center">
+                                <svg class="w-4 h-4 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Estado
+                            </label>
+                            <select name="estado" id="estado" required class="form-select mt-1 block w-full rounded-lg border-gray-300 shadow focus:border-gray-400 focus:ring focus:ring-gray-200 focus:ring-opacity-50">
                                 <option value="recibido" {{ old('estado') == 'recibido' ? 'selected' : '' }}>Recibido</option>
                                 <option value="en_proceso" {{ old('estado') == 'en_proceso' ? 'selected' : '' }}>En Proceso</option>
                                 <option value="finalizado" {{ old('estado') == 'finalizado' ? 'selected' : '' }}>Finalizado</option>
                                 <option value="entregado" {{ old('estado') == 'entregado' ? 'selected' : '' }}>Entregado</option>
                             </select>
                             @error('estado')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
 
                         <div class="mb-4">
                             <div class="flex items-center">
-                                <input type="checkbox" name="pagado" id="pagado" value="1" {{ old('pagado') ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                <label for="pagado" class="ml-2 block text-sm text-gray-900">¿Ha sido pagado?</label>
+                                <input type="checkbox" name="pagado" id="pagado" value="1" {{ old('pagado') ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <label for="pagado" class="ml-2 block text-sm text-gray-900 font-semibold">¿Ha sido pagado?</label>
                             </div>
                             @error('pagado')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
 
-                        <div class="flex items-center justify-end mt-4">
-                            <a href="{{ route('ordenes-servicio.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-2">
+                        <div class="flex items-center justify-end mt-4 gap-2">
+                            <a href="{{ route('ordenes-servicio.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                 Cancelar
                             </a>
-                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150 flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 Guardar Orden
                             </button>
                         </div>

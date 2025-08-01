@@ -17,10 +17,10 @@
         </div>
     </x-slot>
 
-    <div class="py-8">
+    <div class="py-0" style="padding-bottom:0;margin-bottom:0;">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Panel de estadísticas -->
-            <div class="dashboard-stats mb-8">
+            <div class="dashboard-stats mb-2" style="margin-bottom:0;">
                 <div class="stat-card">
                     <div class="stat-icon">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

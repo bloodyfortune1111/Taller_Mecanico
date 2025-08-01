@@ -1,4 +1,16 @@
 <x-app-layout>
+@php
+$piezasArray = $ordenServicio->piezas
+    ? $ordenServicio->piezas->map(function($pieza) {
+        return [
+            'id' => $pieza->id,
+            'nombre' => $pieza->nombre,
+            'precio' => $pieza->precio,
+            'cantidad' => $pieza->pivot->cantidad
+        ];
+    })->values()->toArray()
+    : [];
+@endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Editar Orden de Servicio') }}
@@ -11,7 +23,7 @@
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Editar Orden de Servicio #{{ $ordenServicio->id }}</h3>
 
-                    <form action="{{ route('ordenes-servicio.update', $ordenServicio) }}" method="POST">
+                    <form action="{{ route('ordenes-servicio.update', ['orden_servicio' => $ordenServicio->id]) }}" method="POST">                        
                         @csrf
                         @method('PUT')
 
@@ -186,7 +198,7 @@
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
-                            <a href="{{ route('ordenes-servicio.show', $ordenServicio) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-2">
+                            <a href="{{ route('ordenes-servicio.show', ['orden_servicio' => $ordenServicio->id]) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-2">
                                 Cancelar
                             </a>
                             <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
@@ -210,27 +222,20 @@
         // Inicializar con servicios y piezas existentes
         document.addEventListener('DOMContentLoaded', function() {
             // Cargar servicios existentes
-            @if($ordenServicio->servicios && $ordenServicio->servicios->count() > 0)
-                @foreach($ordenServicio->servicios as $servicio)
-                    serviciosSeleccionados.push({
-                        id: {{ $servicio->id }},
-                        nombre: "{{ $servicio->nombre }}",
-                        precio: {{ $servicio->precio }}
-                    });
-                @endforeach
-            @endif
+            serviciosSeleccionados = @json(
+                $ordenServicio->servicios
+                    ? $ordenServicio->servicios->map(function($servicio) {
+                        return [
+                            'id' => $servicio->id,
+                            'nombre' => $servicio->nombre,
+                            'precio' => $servicio->precio
+                        ];
+                    })->values()->toArray()
+                    : []
+            );
 
             // Cargar piezas existentes
-            @if($ordenServicio->piezas && $ordenServicio->piezas->count() > 0)
-                @foreach($ordenServicio->piezas as $pieza)
-                    piezasSeleccionadas.push({
-                        id: {{ $pieza->id }},
-                        nombre: "{{ $pieza->nombre }}",
-                        precio: {{ $pieza->precio }},
-                        cantidad: {{ $pieza->pivot->cantidad }}
-                    });
-                @endforeach
-            @endif
+            piezasSeleccionadas = @json($piezasArray);
 
             // Actualizar vistas
             actualizarListaServicios();
@@ -408,7 +413,7 @@
             serviciosSeleccionados.forEach((servicio, index) => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
-                input.name = `servicios[${index}]`;
+                input.name = servicios[${index}];
                 input.value = servicio.id;
                 container.appendChild(input);
             });
@@ -417,12 +422,12 @@
             piezasSeleccionadas.forEach((pieza, index) => {
                 const inputId = document.createElement('input');
                 inputId.type = 'hidden';
-                inputId.name = `piezas[${index}][id]`;
+                inputId.name = piezas[${index}][id];
                 inputId.value = pieza.id;
                 
                 const inputCantidad = document.createElement('input');
                 inputCantidad.type = 'hidden';
-                inputCantidad.name = `piezas[${index}][cantidad]`;
+                inputCantidad.name = piezas[${index}][cantidad];
                 inputCantidad.value = pieza.cantidad;
                 
                 container.appendChild(inputId);
@@ -430,67 +435,4 @@
             });
         }
     </script>
-</x-app-layout>
-                            </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('mecanico_id')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-input-label for="diagnostico" :value="__('Diagnóstico')" />
-                            <textarea id="diagnostico" name="diagnostico" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('diagnostico', $ordenServicio->diagnostico) }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('diagnostico')" />
-                        </div>
-                        
-                        <div class="mt-4">
-                            <x-input-label for="servicios_realizar" :value="__('Servicios a Realizar')" />
-                            <textarea id="servicios_realizar" name="servicios_realizar" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('servicios_realizar', $ordenServicio->servicios_realizar) }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('servicios_realizar')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-input-label for="repuestos_necesarios" :value="__('Repuestos Necesarios')" />
-                            <textarea id="repuestos_necesarios" name="repuestos_necesarios" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('repuestos_necesarios', $ordenServicio->repuestos_necesarios) }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('repuestos_necesarios')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-input-label for="costo_total" :value="__('Costo Total')" />
-                            <x-text-input id="costo_total" name="costo_total" type="number" step="0.01" class="mt-1 block w-full" :value="old('costo_total', $ordenServicio->costo_total)" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('costo_total')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-input-label for="estado" :value="__('Estado')" />
-                            <select id="estado" name="estado" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                                <option value="recibido" {{ $ordenServicio->estado == 'recibido' ? 'selected' : '' }}>Recibido</option>
-                                <option value="en_proceso" {{ $ordenServicio->estado == 'en_proceso' ? 'selected' : '' }}>En Proceso</option>
-                                <option value="finalizado" {{ $ordenServicio->estado == 'finalizado' ? 'selected' : '' }}>Finalizado</option>
-                                <option value="entregado" {{ $ordenServicio->estado == 'entregado' ? 'selected' : '' }}>Entregado</option>
-                            </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('estado')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <div class="flex items-center">
-                                <input type="checkbox" name="pagado" id="pagado" value="1" 
-                                    {{ old('pagado', $ordenServicio->pagado ?? false) ? 'checked' : '' }} 
-                                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                <label for="pagado" class="ml-2 block text-sm text-gray-900">¿Ha sido pagado?</label>
-                            </div>
-                            <x-input-error class="mt-2" :messages="$errors->get('pagado')" />
-                        </div>
-
-                        <div class="flex items-center justify-end mt-4">
-                            <x-primary-button class="ms-4">
-                                {{ __('Actualizar Orden') }}
-                            </x-primary-button>
-                            <a href="{{ route('ordenes-servicio.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 ml-2">
-                                {{ __('Cancelar') }}
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 </x-app-layout>

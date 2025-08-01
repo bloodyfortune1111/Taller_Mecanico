@@ -108,7 +108,25 @@ class ServicioController extends Controller
      */
     public function getServicios()
     {
-        $servicios = Servicio::activos()->select('id', 'nombre', 'precio_base', 'categoria')->get();
+        $servicios = Servicio::where('activo', true)
+            ->orderBy('categoria')
+            ->orderBy('nombre')
+            ->select('id', 'nombre', 'precio_base', 'categoria')
+            ->get();
         return response()->json($servicios);
     }
+
+    /**
+     * Obtener todos los servicios con formato para API
+     */
+    public function apiServicios()
+    {
+        $servicios = Servicio::where('activo', true)
+            ->orderBy('categoria')
+            ->orderBy('nombre')
+            ->select('id', 'nombre', 'precio_base as precio', 'categoria', 'descripcion')
+            ->get();
+        return response()->json(['success' => true, 'data' => $servicios]);
+    }
 }
+

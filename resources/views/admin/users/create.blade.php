@@ -42,9 +42,8 @@
                     <label for="role" class="block text-sm font-medium text-gray-700">Rol</label>
                     <select name="role" id="role"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <option value="admin">Administrador</option>
-                        <option value="empleado" selected>Empleado</option>
-                        <option value="mecanico">Mecánico</option>
+                        <option value="recepcionista" {{ old('role') == 'recepcionista' ? 'selected' : '' }}>Recepcionista</option>
+                        <option value="mecanico" {{ old('role') == 'mecanico' ? 'selected' : '' }}>Mecánico</option>
                     </select>
                     @error('role')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -53,7 +52,7 @@
 
                 <div class="flex justify-end gap-2">
                     <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancelar</a>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-black rounded hover:bg-blue-700">Crear</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Crear</button>
                 </div>
             </form>
         </div>

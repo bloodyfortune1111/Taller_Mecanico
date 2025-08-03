@@ -35,14 +35,18 @@
     }
 }
 
-/* Estilos para navegación */
+/* Estilos para navegación con mejor espaciado */
 .nav-item {
     transition: all 0.3s ease;
     position: relative;
+    border-radius: 8px;
+    margin: 0 2px;
 }
 
 .nav-item:hover {
     transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
 .nav-item::after {
@@ -58,6 +62,127 @@
 
 .nav-item:hover::after {
     width: 100%;
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
+    color: #3b82f6 !important;
+    font-weight: 600;
+}
+
+.nav-item.active::after {
+    width: 100%;
+    background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+}
+
+/* Mejorar espaciado en el contenedor principal */
+.hidden.space-x-4 {
+    gap: 1rem !important;
+}
+
+/* Mejor espaciado para elementos nav-item - Optimizado para máxima compactación */
+.nav-item {
+    padding: 0.5rem 0.75rem !important;
+    margin: 0 1px !important;
+    white-space: nowrap !important;
+    font-size: 0.75rem !important;
+    min-width: fit-content !important;
+}
+
+.nav-item span {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+}
+
+.nav-item svg {
+    flex-shrink: 0 !important;
+    transition: all 0.3s ease;
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+}
+
+.nav-item:hover svg {
+    transform: scale(1.1);
+    color: #3b82f6;
+}
+
+/* Contenedor principal con flexibilidad total */
+.flex.space-x-4 {
+    gap: 0.25rem !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+}
+
+/* Responsivo para pantallas menores */
+@media (max-width: 1200px) {
+    .nav-item {
+        padding: 0.375rem 0.5rem !important;
+        margin: 0 !important;
+    }
+    
+    .nav-item span {
+        font-size: 0.7rem !important;
+    }
+    
+    .nav-item svg {
+        width: 0.75rem !important;
+        height: 0.75rem !important;
+    }
+}
+
+/* Para pantallas muy pequeñas - solo iconos */
+@media (max-width: 900px) {
+    .nav-item span {
+        display: none !important;
+    }
+    
+    .nav-item {
+        padding: 0.5rem !important;
+        min-width: auto !important;
+    }
+}
+
+/* Forzar texto oscuro en dropdown de usuario */
+[x-data] [role="menu"] a,
+[x-data] [role="menu"] button,
+.dropdown-menu a,
+.dropdown-menu button,
+[data-dropdown] a,
+[data-dropdown] button {
+    color: #374151 !important; /* text-gray-700 */
+    text-decoration: none !important;
+}
+
+[x-data] [role="menu"] a:hover,
+[x-data] [role="menu"] button:hover,
+.dropdown-menu a:hover,
+.dropdown-menu button:hover,
+[data-dropdown] a:hover,
+[data-dropdown] button:hover {
+    color: #111827 !important; /* text-gray-900 */
+    background-color: #f3f4f6 !important; /* bg-gray-100 */
+}
+
+/* Selectores específicos para dropdown de Laravel Breeze */
+.dropdown-content a,
+.dropdown-content button,
+[x-show] a,
+[x-show] button,
+.origin-top-right a,
+.origin-top-right button {
+    color: #374151 !important; /* text-gray-700 */
+}
+
+.dropdown-content a:hover,
+.dropdown-content button:hover,
+[x-show] a:hover,
+[x-show] button:hover,
+.origin-top-right a:hover,
+.origin-top-right button:hover {
+    color: #111827 !important; /* text-gray-900 */
+    background-color: #f3f4f6 !important; /* bg-gray-100 */
 }
 
 /* Navegación con mejor espaciado y proporciones */
@@ -454,8 +579,541 @@
     opacity: 0.9 !important;
 }
 
+/* Corrección específica para breadcrumb en vistas del mecánico */
+nav.flex[aria-label="Breadcrumb"] a,
+nav.flex[aria-label="Breadcrumb"] span,
+nav[aria-label="Breadcrumb"] a,
+nav[aria-label="Breadcrumb"] span,
+.breadcrumb-nav a,
+.breadcrumb-nav span,
+ol.flex.items-center a,
+ol.flex.items-center span {
+    color: #1f2937 !important;
+    text-decoration: none !important;
+}
+
+nav.flex[aria-label="Breadcrumb"] a:hover,
+nav[aria-label="Breadcrumb"] a:hover,
+.breadcrumb-nav a:hover,
+ol.flex.items-center a:hover {
+    color: #374151 !important;
+}
+
+nav.flex[aria-label="Breadcrumb"] svg,
+nav[aria-label="Breadcrumb"] svg,
+.breadcrumb-nav svg,
+ol.flex.items-center svg {
+    color: #6b7280 !important;
+}
+
+/* Anular estilos de navegación para breadcrumbs específicamente */
+nav[aria-label="Breadcrumb"] a {
+    color: #1f2937 !important;
+}
+
+nav[aria-label="Breadcrumb"] a:hover {
+    color: #374151 !important;
+}
+
 /* Asegurar que el header sea visible */
 .header-container {
     background: linear-gradient(135deg, #2563eb 0%, #4338ca 100%) !important;
     color: white !important;
 }
+
+/* Corrección específica para formularios de perfil */
+.card-body h2,
+.card-body p,
+.card-body label,
+.card-body .text-xl,
+.card-body .text-sm,
+.card-body .form-label {
+    color: #1f2937 !important;
+    background: transparent !important;
+    text-shadow: none !important;
+}
+
+/* Asegurar que los headers de sección no tengan fondo azul */
+section header h2 {
+    color: #1f2937 !important;
+    background: transparent !important;
+    text-shadow: none !important;
+}
+
+section header p {
+    color: #6b7280 !important;
+    background: transparent !important;
+    text-shadow: none !important;
+}
+
+/* Corregir texto en formularios */
+.form-group label,
+.form-group input,
+.form-group .form-label {
+    color: #1f2937 !important;
+    background: transparent !important;
+}
+
+/* Reglas adicionales para asegurar fondos transparentes */
+.profile-card-info section,
+.profile-card-info section header,
+.profile-card-info .card-body section,
+.profile-card-info .card-body header,
+.profile-card-danger section,
+.profile-card-danger section header,
+.profile-card-danger .card-body section,
+.profile-card-danger .card-body header {
+    background: transparent !important;
+}
+
+/* Forzar transparencia en todos los elementos del perfil */
+section h2,
+section p,
+section header,
+section header h2,
+section header p,
+.card-body section,
+.card-body section h2,
+.card-body section p,
+.card-body section header,
+.card-body section header h2,
+.card-body section header p {
+    background: transparent !important;
+    color: inherit !important;
+    text-shadow: none !important;
+}
+
+/* Asegurar que los títulos de las tarjetas sean oscuros */
+.card .card-title,
+.card .card-subtitle,
+.card h3,
+.card p:not(.text-green-600) {
+    color: #1f2937 !important;
+    background: transparent !important;
+}
+
+/* Estilos específicos para las tarjetas del perfil */
+/* Tarjeta de Información del Perfil - fondo blanco */
+.profile-card-info .card-header {
+    background: white !important;
+    color: #1f2937 !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+
+.profile-card-info .card-title {
+    color: #1f2937 !important;
+}
+
+.profile-card-info .card-subtitle {
+    color: #6b7280 !important;
+}
+
+/* Tarjeta de Eliminar Cuenta - fondo rojo suave */
+.profile-card-danger .card-header {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+    color: #dc2626 !important;
+}
+
+.profile-card-danger .card-title {
+    color: #dc2626 !important;
+}
+
+.profile-card-danger .card-subtitle {
+    color: #991b1b !important;
+}
+
+/* Estilos específicos para el header del perfil */
+.profile-header {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    border-radius: 12px !important;
+    padding: 1.5rem !important;
+    margin: 0 1.5rem !important;
+    box-shadow: 0 10px 25px -3px rgba(59, 130, 246, 0.3) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.profile-header h2,
+.profile-header p {
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.profile-header .text-blue-100 {
+    color: rgba(219, 234, 254, 0.9) !important;
+}
+
+/* Mejorar el layout compacto */
+.compact-header {
+    padding: 1rem 1.5rem !important;
+    margin: 0 1.5rem !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.4) !important;
+}
+
+.compact-header h2 {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: white !important;
+    margin: 0 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+.compact-header p {
+    font-size: 0.875rem !important;
+    color: rgba(219, 234, 254, 0.9) !important;
+    margin: 0.25rem 0 0 0 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Responsive para el header del perfil */
+@media (max-width: 768px) {
+    .compact-header {
+        margin: 0 1rem !important;
+        padding: 0.75rem 1rem !important;
+    }
+    
+    .compact-header h2 {
+        font-size: 1.125rem !important;
+    }
+    
+    .compact-header p {
+        font-size: 0.8rem !important;
+    }
+}
+
+/* === NAVEGACIÓN PRINCIPAL MEJORADA === */
+
+/* Contenedor principal de navegación con ancho completo */
+.navbar-full-width .max-w-full {
+    max-width: none !important;
+    padding-left: 1.5rem !important;
+    padding-right: 2rem !important;
+}
+
+/* Logo con mejor separación */
+.navbar-full-width .shrink-0.flex.items-center.mr-8 {
+    margin-right: 2rem !important;
+    flex-shrink: 0 !important;
+}
+
+/* Contenedor de enlaces de navegación mejorado */
+.navbar-full-width .hidden.lg\\:flex.items-center.space-x-1 {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.navbar-full-width .hidden.lg\\:flex.items-center.space-x-1::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Enlaces de navegación mejorados con mejor espaciado */
+.navbar-full-width .nav-link-improved {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease-in-out !important;
+    color: rgb(229, 231, 235) !important;
+    border-radius: 0.5rem !important;
+    position: relative !important;
+    white-space: nowrap !important;
+    backdrop-filter: blur(10px) !important;
+    text-decoration: none !important;
+}
+
+.navbar-full-width .nav-link-improved:hover {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1) !important;
+}
+
+.navbar-full-width .nav-link-improved svg {
+    flex-shrink: 0 !important;
+}
+
+.navbar-full-width .nav-link-improved.active {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2) !important;
+}
+
+.navbar-full-width .nav-link-improved.active::before {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+}
+
+/* Mejoras para el contenedor principal de navegación */
+.navbar-full-width nav .flex.justify-between {
+    align-items: center !important;
+    min-height: 4rem !important;
+}
+
+/* Ajustes para pantallas más pequeñas */
+@media (max-width: 1200px) {
+    .navbar-full-width .nav-link-improved {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    .navbar-full-width .nav-link-improved span {
+        font-size: 0.75rem !important;
+    }
+    
+    .navbar-full-width .max-w-full {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .navbar-full-width .nav-link-improved span {
+        display: none !important;
+    }
+    
+    .navbar-full-width .nav-link-improved {
+        padding: 0.5rem !important;
+        min-width: 40px !important;
+        justify-content: center !important;
+    }
+    
+    .navbar-full-width .shrink-0.flex.items-center.mr-8 {
+        margin-right: 1rem !important;
+    }
+}
+
+/* Clase para aplicar a toda la navbar */
+nav.navbar-improved {
+    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%) !important;
+}
+
+/* === ESTILOS ESPECÍFICOS PARA FACTURAS - MÁXIMA PRIORIDAD === */
+.facturas-btn-blue {
+    color: #1e3a8a !important;
+    background-color: #eff6ff !important;
+    border-color: #93c5fd !important;
+}
+
+.facturas-btn-blue:hover {
+    background-color: #dbeafe !important;
+    color: #1e3a8a !important;
+}
+
+.facturas-btn-blue i {
+    color: #1e3a8a !important;
+}
+
+.facturas-btn-green {
+    color: #14532d !important;
+    background-color: #f0fdf4 !important;
+    border-color: #86efac !important;
+}
+
+.facturas-btn-green:hover {
+    background-color: #dcfce7 !important;
+    color: #14532d !important;
+}
+
+.facturas-btn-green i {
+    color: #14532d !important;
+}
+
+.facturas-badge-green {
+    color: #14532d !important;
+    background-color: #dcfce7 !important;
+}
+
+.facturas-badge-green i {
+    color: #14532d !important;
+}
+
+/* Forzar visibilidad en todos los elementos de facturas */
+.facturas-page * {
+    color: inherit !important;
+}
+
+.facturas-page a {
+    text-decoration: none !important;
+}
+
+.facturas-page .facturas-btn-blue,
+.facturas-page .facturas-btn-blue * {
+    color: #1e3a8a !important;
+}
+
+.facturas-page .facturas-btn-green,
+.facturas-page .facturas-btn-green * {
+    color: #14532d !important;
+}
+
+/* Anular todos los estilos de navegación para elementos de facturas */
+.facturas-btn-blue:not(.nav-item),
+.facturas-btn-green:not(.nav-item) {
+    transform: none !important;
+    box-shadow: none !important;
+    background: inherit !important;
+}
+
+.facturas-btn-blue:hover:not(.nav-item) {
+    background-color: #dbeafe !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.facturas-btn-green:hover:not(.nav-item) {
+    background-color: #dcfce7 !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* === ESTILOS ESPECÍFICOS PARA PIEZAS - MÁXIMA PRIORIDAD === */
+.piezas-page .piezas-badge-green {
+    color: #14532d !important;
+    background-color: #dcfce7 !important;
+}
+
+.piezas-page .piezas-badge-green i,
+.piezas-page .piezas-badge-green svg {
+    color: #14532d !important;
+}
+
+.piezas-page .piezas-badge-red {
+    color: #991b1b !important;
+    background-color: #fee2e2 !important;
+}
+
+.piezas-page .piezas-badge-red i,
+.piezas-page .piezas-badge-red svg {
+    color: #991b1b !important;
+}
+
+/* Forzar visibilidad en todos los elementos de piezas */
+.piezas-page * {
+    color: inherit !important;
+}
+
+.piezas-page .piezas-badge-green,
+.piezas-page .piezas-badge-green * {
+    color: #14532d !important;
+}
+
+.piezas-page .piezas-badge-red,
+.piezas-page .piezas-badge-red * {
+    color: #991b1b !important;
+}
+
+.piezas-page .piezas-badge-blue {
+    color: #1e3a8a !important;
+    background-color: #dbeafe !important;
+}
+
+.piezas-page .piezas-badge-blue,
+.piezas-page .piezas-badge-blue * {
+    color: #1e3a8a !important;
+}
+
+/* === ESTILOS ESPECÍFICOS PARA SERVICIOS - MÁXIMA PRIORIDAD === */
+.servicios-page .servicios-badge-green {
+    color: #14532d !important;
+    background-color: #dcfce7 !important;
+}
+
+.servicios-page .servicios-badge-green i,
+.servicios-page .servicios-badge-green svg,
+.servicios-page .servicios-badge-green div {
+    color: #14532d !important;
+}
+
+.servicios-page .servicios-badge-red {
+    color: #991b1b !important;
+    background-color: #fee2e2 !important;
+}
+
+.servicios-page .servicios-badge-red i,
+.servicios-page .servicios-badge-red svg,
+.servicios-page .servicios-badge-red div {
+    color: #991b1b !important;
+}
+
+.servicios-page .servicios-badge-blue {
+    color: #1e3a8a !important;
+    background-color: #dbeafe !important;
+}
+
+.servicios-page .servicios-badge-blue,
+.servicios-page .servicios-badge-blue * {
+    color: #1e3a8a !important;
+}
+
+/* Forzar visibilidad en todos los elementos de servicios */
+.servicios-page * {
+    color: inherit !important;
+}
+
+.servicios-page .servicios-badge-green,
+.servicios-page .servicios-badge-green * {
+    color: #14532d !important;
+}
+
+.servicios-page .servicios-badge-red,
+.servicios-page .servicios-badge-red * {
+    color: #991b1b !important;
+}
+
+/* === ESTILOS ESPECÍFICOS PARA REPORTES - ICONOS === */
+.reportes-page .stat-card .stat-icon i {
+    font-size: 1.5rem !important;
+    color: inherit !important;
+    display: inline-block !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+/* Asegurar que los iconos de FontAwesome se muestren correctamente */
+.fas, .far, .fab, .fal, .fad {
+    font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 6 Brands" !important;
+    font-weight: 900 !important;
+    display: inline-block !important;
+}
+
+.fa-car:before { content: "\f1b9" !important; }
+.fa-tools:before { content: "\f7d9" !important; }
+.fa-dollar-sign:before { content: "\f155" !important; }
+.fa-calendar:before { content: "\f133" !important; }
+.fa-clock:before { content: "\f017" !important; }
+.fa-users:before { content: "\f0c0" !important; }
+.fa-chart-line:before { content: "\f201" !important; }
+.fa-cogs:before { content: "\f085" !important; }
+
+/* Forzar visibilidad en tarjetas de estadísticas */
+.stat-card .stat-icon i {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Aplicar colores específicos a los iconos */
+.text-blue-600 { color: #2563eb !important; }
+.text-green-600 { color: #16a34a !important; }
+.text-yellow-600 { color: #ca8a04 !important; }
+.text-purple-600 { color: #9333ea !important; }
+.text-orange-600 { color: #ea580c !important; }
+.text-indigo-600 { color: #4f46e5 !important; }
+.text-emerald-600 { color: #059669 !important; }
+.text-blue-500 { color: #3b82f6 !important; }

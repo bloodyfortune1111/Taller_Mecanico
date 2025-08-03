@@ -18,7 +18,7 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="servicios-page max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Panel de estadísticas -->
             <div class="dashboard-stats mb-8">
                 <div class="stat-card">
@@ -29,7 +29,7 @@
                     </div>
                     <div class="stat-title">Total Servicios</div>
                     <div class="stat-value">{{ $servicios->count() }}</div>
-                    <div class="stat-change positive">+100%</div>
+                    <div class="stat-change positive">Registrados</div>
                 </div>
                 
                 <div class="stat-card">
@@ -49,18 +49,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                         </svg>
                     </div>
-                    <div class="stat-title">Valor Promedio</div>
-                    <div class="stat-value">${{ number_format($servicios->avg('precio'), 2) }}</div>
+                    <div class="stat-title">Precio Promedio</div>
+                    <div class="stat-value">${{ number_format($servicios->avg('precio_base'), 2) }}</div>
                     <div class="stat-change positive">Por servicio</div>
-                </div>
-            </div>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <h3 class="text-sm font-semibold text-black">Precio Promedio</h3>
-                            <p class="text-xl font-bold text-black">${{ number_format($servicios->avg('precio_base'), 0) }}</p>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -160,10 +151,12 @@
                                                 @endif
                                             </div>
                                             <div class="ml-4">
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                                                    @if($servicio->activo) bg-green-100 text-green-800 ring-1 ring-green-600/20
-                                                    @else bg-red-100 text-red-800 ring-1 ring-red-600/20 @endif">
-                                                    <div class="w-1.5 h-1.5 rounded-full mr-1.5 @if($servicio->activo) bg-green-500 @else bg-red-500 @endif"></div>
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ring-1
+                                                    @if($servicio->activo) servicios-badge-green ring-green-600/20
+                                                    @else servicios-badge-red ring-red-600/20 @endif"
+                                                    style="@if($servicio->activo) color: #14532d !important; background-color: #dcfce7 !important; @else color: #991b1b !important; background-color: #fee2e2 !important; @endif">
+                                                    <div class="w-1.5 h-1.5 rounded-full mr-1.5 @if($servicio->activo) bg-green-500 @else bg-red-500 @endif"
+                                                         style="@if($servicio->activo) background-color: #10b981 !important; @else background-color: #ef4444 !important; @endif"></div>
                                                     {{ $servicio->activo ? 'Activo' : 'Inactivo' }}
                                                 </span>
                                             </div>
@@ -175,7 +168,8 @@
                                         <div class="grid grid-cols-2 gap-4 mb-4">
                                             <div>
                                                 <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</p>
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-1">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium servicios-badge-blue mt-1"
+                                                      style="color: #1e3a8a !important; background-color: #dbeafe !important;">
                                                     {{ $servicio->categoria ?: 'Sin categoría' }}
                                                 </span>
                                             </div>

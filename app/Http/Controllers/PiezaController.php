@@ -305,4 +305,32 @@ class PiezaController extends Controller
             'message' => $isConnected ? 'Conexión exitosa' : 'Error de conexión'
         ]);
     }
+
+    /**
+     * Actualizar stock de una pieza
+     */
+    public function updateStock(Request $request, Pieza $pieza)
+    {
+        $request->validate([
+            'stock' => 'required|integer|min:0'
+        ]);
+
+        try {
+            $pieza->stock = $request->stock;
+            $pieza->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Stock actualizado correctamente',
+                'new_stock' => $pieza->stock
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error actualizando stock: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el stock'
+            ], 500);
+        }
+    }
 }

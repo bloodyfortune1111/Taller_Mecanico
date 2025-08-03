@@ -72,12 +72,6 @@
             <a href="{{ route('login') }}" class="inline-block px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:text-lg transition duration-150 ease-in-out shadow-md">
                 Iniciar Sesión
             </a>
-
-            @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="ml-4 inline-block px-6 py-2 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-100 md:text-lg transition duration-150 ease-in-out shadow-md border-blue-600">
-                    Registrarse
-                </a>
-            @endif
         @endauth
     </div>
     <script>

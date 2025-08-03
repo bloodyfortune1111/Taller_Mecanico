@@ -109,27 +109,6 @@
                         </div>
                     </div>
                     
-                    <!-- Información del sistema -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                        <div class="bg-gradient-to-r from-primary-50 to-blue-50 p-6 rounded-xl border border-primary-200">
-                            <h4 class="font-bold text-lg text-primary-900 mb-3">Sistema de Gestión</h4>
-                            <p class="text-gray-700 leading-relaxed">
-                                Este sistema ha sido diseñado para optimizar la gestión de tu taller mecánico, permitiéndote
-                                centralizar la información de clientes y vehículos, así como llevar un control riguroso de
-                                cada orden de servicio.
-                            </p>
-                        </div>
-                        
-                        <div class="bg-gradient-to-r from-primary-50 to-blue-50 p-6 rounded-xl border border-primary-200">
-                            <h4 class="font-bold text-lg text-primary-900 mb-3">Eficiencia y Control</h4>
-                            <p class="text-gray-700 leading-relaxed">
-                                Desde el registro detallado de ingresos y egresos hasta la asignación de mecánicos y la
-                                generación de reportes automáticos, nuestra plataforma te brinda las herramientas necesarias
-                                para mejorar la trazabilidad y rentabilidad de tu negocio.
-                            </p>
-                        </div>
-                    </div>
-                    
                     <!-- Acciones rápidas -->
                     <div class="mt-8 text-center">
                         <h4 class="font-bold text-xl text-primary-900 mb-6">Acciones Rápidas</h4>

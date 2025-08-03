@@ -18,7 +18,7 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="piezas-page max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Panel de estadísticas -->
             <div class="dashboard-stats mb-8">
                 <div class="stat-card">
@@ -70,27 +70,6 @@
             <div class="bg-white overflow-hidden shadow-lg sm:rounded-xl border border-gray-100">
                 <div class="p-6 text-gray-900">
                     <!-- Header con acciones -->
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 space-y-4 md:space-y-0">
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-900 flex items-center">
-                                <div class="w-1 h-8 bg-gradient-to-b from-purple-500 to-indigo-600 rounded-full mr-3"></div>
-                                Catálogo de Piezas
-                            </h3>
-                            <p class="text-gray-600 mt-1">Gestiona tu inventario de piezas y repuestos</p>
-                        </div>
-                        <div class="flex space-x-3">
-                            @if(auth()->user()->role === 'admin')
-                            @else
-                            <span class="inline-flex items-center px-6 py-3 bg-gray-100 border border-gray-300 rounded-xl font-semibold text-sm text-black uppercase tracking-wider">
-                                <svg class="w-5 h-5 mr-2 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                                Solo Consulta
-                            </span>
-                            @endif
-                        </div>
-                    </div>
 
                     @if (session('success'))
                         <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-400 text-green-700 px-6 py-4 rounded-r-xl mb-6 shadow-sm notification-enter" role="alert">
@@ -114,6 +93,59 @@
                         </div>
                     @endif
 
+                    <!-- Filtros de búsqueda mejorados -->
+                    <div class="mb-8 bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-xl border border-gray-200 shadow-sm">
+                        <form method="GET" action="{{ route('piezas.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                            <div class="md:col-span-2">
+                                <label for="search" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <svg class="w-4 h-4 inline mr-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                    Buscar Pieza
+                                </label>
+                                <input type="text" name="search" id="search" value="{{ request('search') }}" 
+                                       placeholder="Nombre, número de parte, marca..."
+                                       class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 form-input-focus">
+                            </div>
+                            
+                            <div>
+                                <label for="categoria" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <svg class="w-4 h-4 inline mr-1 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                    </svg>
+                                    Categoría
+                                </label>
+                                <select name="categoria" id="categoria" 
+                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 form-input-focus">
+                                    <option value="">Todas</option>
+                                    @foreach($categorias as $key => $value)
+                                        <option value="{{ $key }}" {{ request('categoria') === $key ? 'selected' : '' }}>
+                                            {{ $value }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            <div class="flex items-end">
+                                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-3 rounded-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg btn-glow">
+                                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                    </svg>
+                                    Filtrar
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-end">
+                                <a href="{{ route('piezas.index') }}" class="w-full text-center bg-gradient-to-r from-gray-300 to-gray-400 text-gray-700 px-4 py-3 rounded-lg hover:from-gray-400 hover:to-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg">
+                                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    Limpiar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+
                     <!-- Grid de piezas locales - Diseño moderno con tarjetas -->
                     @forelse($piezasLocales as $pieza)
                         @if($loop->first)
@@ -121,55 +153,60 @@
                         @endif
                             <!-- Tarjeta de pieza -->
                             <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden card-hover fade-in">
-                                <!-- Contenido de la tarjeta -->
-                                <div class="p-6">
-                                    <!-- Estado de la pieza - header -->
-                                    <div class="flex items-start justify-between mb-4">
-                                        <div class="flex space-x-2">
-                                            @if($pieza->activo)
-                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold piezas-badge-green shadow-sm"
-                                                      style="color: #14532d !important; background-color: #dcfce7 !important;">
-                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" style="color: #14532d !important;">
-                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                    Activo
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold piezas-badge-red shadow-sm"
-                                                      style="color: #991b1b !important; background-color: #fee2e2 !important;">
-                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" style="color: #991b1b !important;">
-                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                    Inactivo
-                                                </span>
-                                            @endif
-                                        </div>
-                                        
-                                        <!-- Badge de disponibilidad -->
-                                        <div>
-                                            @switch($pieza->disponibilidad)
-                                                @case('disponible')
-                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500 text-white shadow-lg badge-pulse">
-                                                        <div class="w-2 h-2 bg-white rounded-full mr-1.5 animate-pulse"></div>
-                                                        Disponible
-                                                    </span>
-                                                    @break
-                                                @case('agotado')
-                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500 text-white shadow-lg">
-                                                        <div class="w-2 h-2 bg-white rounded-full mr-1.5"></div>
-                                                        Agotado
-                                                    </span>
-                                                    @break
-                                                @case('descontinuado')
-                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500 text-white shadow-lg">
-                                                        <div class="w-2 h-2 bg-white rounded-full mr-1.5"></div>
-                                                        Descontinuado
-                                                    </span>
-                                                    @break
-                                            @endswitch
-                                        </div>
+                                <!-- Imagen de la pieza -->
+                                <div class="relative h-48 bg-gradient-to-br from-gray-50 to-gray-100">
+                                    <div class="flex items-center justify-center h-full">
+                                        <svg class="w-16 h-16 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    
+                                    <!-- Estado de la pieza - overlay -->
+                                    <div class="absolute top-3 right-3">
+                                        @if($pieza->activo)
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 shadow-sm">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Activo
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 shadow-sm">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Inactivo
+                                            </span>
+                                        @endif
                                     </div>
 
+                                    <!-- Badge de disponibilidad -->
+                                    <div class="absolute top-3 left-3">
+                                        @switch($pieza->disponibilidad)
+                                            @case('disponible')
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500 text-white shadow-lg badge-pulse">
+                                                    <div class="w-2 h-2 bg-white rounded-full mr-1.5 animate-pulse"></div>
+                                                    Disponible
+                                                </span>
+                                                @break
+                                            @case('agotado')
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500 text-white shadow-lg">
+                                                    <div class="w-2 h-2 bg-white rounded-full mr-1.5"></div>
+                                                    Agotado
+                                                </span>
+                                                @break
+                                            @case('descontinuado')
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500 text-white shadow-lg">
+                                                    <div class="w-2 h-2 bg-white rounded-full mr-1.5"></div>
+                                                    Descontinuado
+                                                </span>
+                                                @break
+                                        @endswitch
+                                    </div>
+                                </div>
+
+                                <!-- Contenido de la tarjeta -->
+                                <div class="p-6">
                                     <!-- Título y número de parte -->
                                     <div class="mb-4">
                                         <h3 class="text-lg font-bold text-gray-900 mb-2 leading-tight">{{ $pieza->nombre }}</h3>
@@ -183,8 +220,7 @@
                                         <!-- Categoría -->
                                         <div class="flex items-center justify-between">
                                             <span class="text-sm text-gray-600">Categoría:</span>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium piezas-badge-blue"
-                                                  style="color: #1e3a8a !important; background-color: #dbeafe !important;">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                 {{ $categorias[$pieza->categoria] ?? $pieza->categoria }}
                                             </span>
                                         </div>
@@ -238,6 +274,13 @@
                                             Editar Stock
                                         </button>
                                         @if(auth()->user()->role === 'admin')
+                                        <a href="{{ route('piezas.edit', $pieza) }}" 
+                                           class="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-center py-2 px-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg btn-glow">
+                                            <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                            </svg>
+                                            Editar
+                                        </a>
                                         <form action="{{ route('piezas.destroy', $pieza) }}" method="POST" class="flex-1">
                                             @csrf
                                             @method('DELETE')
@@ -351,85 +394,61 @@
         </div>
     </div>
 
+    @push('scripts')
     <script>
-        // Asegurar que el DOM esté completamente cargado
-        document.addEventListener('DOMContentLoaded', function() {
-            let currentPiezaId = null;
+        let currentPiezaId = null;
 
-            // Hacer las funciones globales
-            window.openEditStockModal = function(piezaId, piezaNombre, stockActual) {
-                console.log('Opening modal with:', piezaId, piezaNombre, stockActual);
-                currentPiezaId = piezaId;
-                document.getElementById('pieza-name').textContent = `Actualizar stock para: ${piezaNombre}`;
-                document.getElementById('stock-actual').textContent = stockActual;
-                document.getElementById('nuevo_stock').value = stockActual;
-                document.getElementById('editStockModal').classList.remove('hidden');
-                console.log('Modal should be visible now');
-            };
+        // Variables para el modal de stock
+        function openEditStockModal(piezaId, piezaNombre, stockActual) {
+            console.log('Opening modal with:', piezaId, piezaNombre, stockActual);
+            currentPiezaId = piezaId;
+            document.getElementById('pieza-name').textContent = `Actualizar stock para: ${piezaNombre}`;
+            document.getElementById('stock-actual').textContent = stockActual;
+            document.getElementById('nuevo_stock').value = stockActual;
+            document.getElementById('editStockModal').classList.remove('hidden');
+            console.log('Modal should be visible now');
+        }
 
-            window.closeEditStockModal = function() {
-                document.getElementById('editStockModal').classList.add('hidden');
-                currentPiezaId = null;
-            };
+        function closeEditStockModal() {
+            document.getElementById('editStockModal').classList.add('hidden');
+            currentPiezaId = null;
+        }
 
-            window.updateStock = function() {
-                if (!currentPiezaId) return;
-                
-                const nuevoStock = document.getElementById('nuevo_stock').value;
-                
-                if (nuevoStock === '' || nuevoStock < 0) {
-                    alert('Ingresa una cantidad válida');
-                    return;
+        function updateStock() {
+            if (!currentPiezaId) return;
+            
+            const nuevoStock = document.getElementById('nuevo_stock').value;
+            
+            if (nuevoStock === '' || nuevoStock < 0) {
+                alert('Ingresa una cantidad válida');
+                return;
+            }
+
+            fetch(`/piezas/${currentPiezaId}/update-stock`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    stock: parseInt(nuevoStock)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al actualizar el stock');
+            });
 
-                console.log('Enviando datos:', {
-                    url: `/piezas/${currentPiezaId}/update-stock`,
-                    stock: parseInt(nuevoStock),
-                    csrf: document.querySelector('meta[name="csrf-token"]').content
-                });
-
-                fetch(`/piezas/${currentPiezaId}/update-stock`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        stock: parseInt(nuevoStock)
-                    })
-                })
-                .then(response => {
-                    console.log('Respuesta del servidor:', response);
-                    console.log('Status:', response.status);
-                    console.log('Content-Type:', response.headers.get('content-type'));
-                    
-                    // Verificar si la respuesta es JSON
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        return response.json();
-                    } else {
-                        // Si no es JSON, obtener el texto para ver qué está devolviendo
-                        return response.text().then(text => {
-                            console.error('Respuesta no es JSON:', text);
-                            throw new Error('El servidor devolvió HTML en lugar de JSON. Posible error en el backend.');
-                        });
-                    }
-                })
-                .then(data => {
-                    console.log('Datos recibidos:', data);
-                    if (data.success) {
-                        alert('Stock actualizado correctamente');
-                        window.closeEditStockModal();
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error completo:', error);
-                    alert('Error al actualizar el stock: ' + error.message);
-                });
-            };
-        });
+            closeEditStockModal();
+        }
     </script>
+    @endpush
 </x-app-layout>

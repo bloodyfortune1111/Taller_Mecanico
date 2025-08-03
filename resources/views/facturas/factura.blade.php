@@ -178,9 +178,9 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <h1>🔧 TALLER MECÁNICO PROFESIONAL</h1>
+        <h1>TALLER MECÁNICO PROFESIONAL</h1>
         <p>Servicio Automotriz de Calidad</p>
-        <p>📍 Av. Principal #123, Ciudad de México | 📞 55-1234-5678 | ✉️ info@tallermx.com</p>
+        <p>Av. Principal #123, San Francisco de Campeche | 55-1234-5678 | info@tallermx.com</p>
         <p>RFC: TMX123456789 | Régimen Fiscal: Persona Física con Actividades Empresariales</p>
     </div>
 

@@ -5,14 +5,8 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="logo-container group">
-                        <div class="logo-icon group-hover:scale-105 transition-transform duration-300">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                        </div>
-                        <span class="logo-text">GearsMotors</span>
+                    <a href="{{ route('dashboard') }}">
+                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
 
@@ -52,11 +46,8 @@
 
                     {{-- Vehículos - Admin y Recepcionista --}}
                     @if(in_array(auth()->user()->role, ['admin', 'recepcionista']))
-                        @php
-                            $vehiculosRoute = auth()->user()->role === 'admin' ? 'vehiculos.index' : 'recepcionista.vehiculos.index';
-                        @endphp
-                        <x-nav-link :href="route($vehiculosRoute)" :active="request()->routeIs(['vehiculos.*', 'recepcionista.vehiculos.*'])"
-                                    class="flex items-center space-x-1 px-2 py-2 nav-item {{ request()->routeIs(['vehiculos.*', 'recepcionista.vehiculos.*']) ? 'active' : '' }}">
+                        <x-nav-link :href="route('vehiculos.index')" :active="request()->routeIs('vehiculos.*')"
+                                    class="flex items-center space-x-1 px-2 py-2 nav-item {{ request()->routeIs('vehiculos.*') ? 'active' : '' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7"></path>
                             </svg>
@@ -69,13 +60,13 @@
                         @php
                             $ordenesRoute = match(auth()->user()->role) {
                                 'admin' => 'ordenes-servicio.index',
-                                'recepcionista' => 'recepcionista.ordenes-servicio.index',
-                                'mecanico' => 'mecanico.ordenes-servicio.index',
+                                'recepcionista' => 'recepcionista.ordenes.index',
+                                'mecanico' => 'mecanico.ordenes.index',
                                 default => 'ordenes-servicio.index'
                             };
                         @endphp
-                        <x-nav-link :href="route($ordenesRoute)" :active="request()->routeIs(['ordenes-servicio.*', 'recepcionista.ordenes-servicio.*', 'mecanico.ordenes-servicio.*'])"
-                                    class="flex items-center space-x-1 px-2 py-2 nav-item {{ request()->routeIs(['ordenes-servicio.*', 'recepcionista.ordenes-servicio.*', 'mecanico.ordenes-servicio.*']) ? 'active' : '' }}">
+                        <x-nav-link :href="route($ordenesRoute)" :active="request()->routeIs(['ordenes-servicio.*', 'recepcionista.ordenes.*', 'mecanico.ordenes.*'])"
+                                    class="flex items-center space-x-1 px-2 py-2 nav-item {{ request()->routeIs(['ordenes-servicio.*', 'recepcionista.ordenes.*', 'mecanico.ordenes.*']) ? 'active' : '' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                             </svg>
@@ -85,11 +76,8 @@
 
                     {{-- Servicios - Admin y Recepcionista (solo lectura para recepcionista) --}}
                     @if(in_array(auth()->user()->role, ['admin', 'recepcionista']))
-                        @php
-                            $serviciosRoute = auth()->user()->role === 'admin' ? 'servicios.index' : 'recepcionista.servicios.index';
-                        @endphp
-                        <x-nav-link :href="route($serviciosRoute)" :active="request()->routeIs(['servicios.*', 'recepcionista.servicios.*'])"
-                                    class="flex items-center space-x-1 px-2 py-2 nav-item {{ request()->routeIs(['servicios.*', 'recepcionista.servicios.*']) ? 'active' : '' }}">
+                        <x-nav-link :href="route('servicios.index')" :active="request()->routeIs('servicios.*')"
+                                    class="flex items-center space-x-1 px-2 py-2 nav-item {{ request()->routeIs('servicios.*') ? 'active' : '' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 7.172V5L8 4z"></path>
                             </svg>
@@ -99,11 +87,8 @@
 
                     {{-- Piezas - Admin y Recepcionista (solo lectura para recepcionista) --}}
                     @if(in_array(auth()->user()->role, ['admin', 'recepcionista']))
-                        @php
-                            $piezasRoute = auth()->user()->role === 'admin' ? 'piezas.index' : 'recepcionista.piezas.index';
-                        @endphp
-                        <x-nav-link :href="route($piezasRoute)" :active="request()->routeIs(['piezas.*', 'recepcionista.piezas.*'])"
-                                    class="flex items-center space-x-1 px-2 py-2 nav-item {{ request()->routeIs(['piezas.*', 'recepcionista.piezas.*']) ? 'active' : '' }}">
+                        <x-nav-link :href="route('piezas.index')" :active="request()->routeIs('piezas.*')"
+                                    class="flex items-center space-x-1 px-2 py-2 nav-item {{ request()->routeIs('piezas.*') ? 'active' : '' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                             </svg>
@@ -132,17 +117,6 @@
                             <span class="text-xs">{{ __('Reportes') }}</span>
                         </x-nav-link>
                     @endif
-
-                    {{-- Empleados - Solo admin --}}
-                    @if(auth()->user()->role === 'admin')
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')"
-                                    class="flex items-center space-x-1 px-2 py-2 nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                            </svg>
-                            <span class="text-xs">{{ __('Empleados') }}</span>
-                        </x-nav-link>
-                    @endif
                 </div>
 
             </div>
@@ -163,7 +137,7 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')" class="text-gray-700 hover:text-gray-900 hover:bg-gray-100">
+                        <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
@@ -173,8 +147,7 @@
 
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
-                                                this.closest('form').submit();"
-                                    class="text-gray-700 hover:text-gray-900 hover:bg-gray-100">
+                                                this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
@@ -214,10 +187,7 @@
             @endif
 
             @if(in_array(auth()->user()->role, ['admin', 'recepcionista']))
-                @php
-                    $vehiculosRoute = auth()->user()->role === 'admin' ? 'vehiculos.index' : 'recepcionista.vehiculos.index';
-                @endphp
-                <x-responsive-nav-link :href="route($vehiculosRoute)" :active="request()->routeIs(['vehiculos.*', 'recepcionista.vehiculos.*'])">
+                <x-responsive-nav-link :href="route('vehiculos.index')" :active="request()->routeIs('vehiculos.*')">
                     {{ __('Vehículos') }}
                 </x-responsive-nav-link>
             @endif
@@ -226,26 +196,22 @@
                 @php
                     $ordenesRoute = match(auth()->user()->role) {
                         'admin' => 'ordenes-servicio.index',
-                        'recepcionista' => 'recepcionista.ordenes-servicio.index',
-                        'mecanico' => 'mecanico.ordenes-servicio.index',
+                        'recepcionista' => 'recepcionista.ordenes.index',
+                        'mecanico' => 'mecanico.ordenes.index',
                         default => 'ordenes-servicio.index'
                     };
                 @endphp
-                <x-responsive-nav-link :href="route($ordenesRoute)" :active="request()->routeIs(['ordenes-servicio.*', 'recepcionista.ordenes-servicio.*', 'mecanico.ordenes-servicio.*'])">
+                <x-responsive-nav-link :href="route($ordenesRoute)" :active="request()->routeIs(['ordenes-servicio.*', 'recepcionista.ordenes.*', 'mecanico.ordenes.*'])">
                     {{ __('Órdenes de Servicio') }}
                 </x-responsive-nav-link>
             @endif
 
             @if(in_array(auth()->user()->role, ['admin', 'recepcionista']))
-                @php
-                    $serviciosRoute = auth()->user()->role === 'admin' ? 'servicios.index' : 'recepcionista.servicios.index';
-                    $piezasRoute = auth()->user()->role === 'admin' ? 'piezas.index' : 'recepcionista.piezas.index';
-                @endphp
-                <x-responsive-nav-link :href="route($serviciosRoute)" :active="request()->routeIs(['servicios.*', 'recepcionista.servicios.*'])">
+                <x-responsive-nav-link :href="route('servicios.index')" :active="request()->routeIs('servicios.*')">
                     {{ __('Servicios') }}
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route($piezasRoute)" :active="request()->routeIs(['piezas.*', 'recepcionista.piezas.*'])">
+                <x-responsive-nav-link :href="route('piezas.index')" :active="request()->routeIs('piezas.*')">
                     {{ __('Piezas') }}
                 </x-responsive-nav-link>
 
@@ -255,12 +221,6 @@
 
                 <x-responsive-nav-link :href="route('reportes.index')" :active="request()->routeIs('reportes.*')">
                     {{ __('Reportes') }}
-                </x-responsive-nav-link>
-            @endif
-
-            @if(auth()->user()->role === 'admin')
-                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                    {{ __('Empleados') }}
                 </x-responsive-nav-link>
             @endif
         </div>

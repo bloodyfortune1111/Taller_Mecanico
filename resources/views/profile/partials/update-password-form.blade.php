@@ -1,10 +1,10 @@
 <section>
-    <header class="mb-6">
-        <h2 class="text-xl font-bold text-gray-900">
+    <header class="mb-6" style="background: transparent !important;">
+        <h2 class="text-xl font-bold text-gray-900" style="color: #1f2937 !important; background: transparent !important; text-shadow: none !important;">
             {{ __('Actualizar Contraseña') }}
         </h2>
 
-        <p class="mt-2 text-sm text-gray-600">
+        <p class="mt-2 text-sm text-gray-600" style="color: #6b7280 !important; background: transparent !important; text-shadow: none !important;">
             {{ __('Asegúrate de usar una contraseña larga y segura para mantener tu cuenta protegida.') }}
         </p>
     </header>

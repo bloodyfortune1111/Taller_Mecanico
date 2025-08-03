@@ -31,7 +31,7 @@ class FacturaController extends Controller
         $this->verificarPermisos();
         
         $ordenesTerminadas = OrdenServicio::with(['cliente', 'vehiculo'])
-            ->where('estado', 'finalizado')
+            ->whereIn('estado', ['finalizado', 'entregado'])
             ->where('pagado', true)
             ->orderBy('updated_at', 'desc')
             ->paginate(10);
@@ -47,7 +47,7 @@ class FacturaController extends Controller
         $this->verificarPermisos();
         $orden = OrdenServicio::with(['cliente', 'vehiculo', 'servicios', 'piezas'])
             ->where('id', $id)
-            ->where('estado', 'finalizado')
+            ->whereIn('estado', ['finalizado', 'entregado'])
             ->where('pagado', true)
             ->firstOrFail();
 
@@ -90,7 +90,7 @@ class FacturaController extends Controller
         $this->verificarPermisos();
         $orden = OrdenServicio::with(['cliente', 'vehiculo', 'servicios', 'piezas'])
             ->where('id', $id)
-            ->where('estado', 'finalizado')
+            ->whereIn('estado', ['finalizado', 'entregado'])
             ->where('pagado', true)
             ->firstOrFail();
 

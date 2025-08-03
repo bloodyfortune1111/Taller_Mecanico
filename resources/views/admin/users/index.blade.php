@@ -3,7 +3,7 @@
         <div class="max-w-5xl mx-auto bg-white shadow rounded-lg p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Empleados</h2>
-                <a href="{{ route('admin.users.create') }}" class="inline-block px-4 py-2 bg-blue-600 text-black rounded hover:bg-blue-700 transition font-semibold shadow">
+                <a href="{{ route('admin.users.create') }}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold shadow">
                     Nuevo Empleado
                 </a>
             </div>
@@ -13,6 +13,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                         </tr>
                     </thead>
@@ -21,13 +22,13 @@
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $user->name }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
-                            
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-block px-2 py-1 rounded bg-gray-200 text-gray-700 text-xs font-semibold">
                                     {{ ucfirst($user->role) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap flex gap-2">
-                                <a href="{{ route('admin.users.edit', $user) }}" class="px-3 py-1 bg-yellow-500 text-black rounded hover:bg-yellow-600 transition text-sm font-semibold shadow">
+                                <a href="{{ route('admin.users.edit', $user) }}" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition text-sm font-semibold shadow">
                                     Editar
                                 </a>
                                 <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('¿Eliminar este usuario?')">

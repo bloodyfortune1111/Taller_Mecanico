@@ -49,8 +49,8 @@ Route::prefix('mecanico')->name('mecanico.')->middleware(['auth', 'mecanico.only
         ->name('orden.estado');
     
     // Mecánicos pueden ver las órdenes asignadas y actualizar estados
-    Route::get('/ordenes-servicio', [OrdenServicioController::class, 'index'])->name('ordenes.index');
-    Route::get('/ordenes-servicio/{ordenes_servicio}', [OrdenServicioController::class, 'show'])->name('ordenes.show');
+    Route::get('/ordenes-servicio', [OrdenServicioController::class, 'index'])->name('ordenes-servicio.index');
+    Route::get('/ordenes-servicio/{orden_servicio}', [OrdenServicioController::class, 'show'])->name('ordenes-servicio.show');
     
     // Ruta de logout para mecánicos
     Route::post('/logout', [App\Http\Controllers\Auth\MecanicoAuthController::class, 'logout'])
@@ -69,10 +69,13 @@ Route::prefix('recepcionista')->name('recepcionista.')->middleware(['auth', 'rec
     Route::get('/vehiculos/{vehiculo}', [VehiculoController::class, 'show'])->name('vehiculos.show');
 
     // Rutas de recursos para Ordenes de Servicio (crear y ver para recepcionista solamente)
-    Route::get('/ordenes-servicio', [OrdenServicioController::class, 'index'])->name('ordenes.index');
-    Route::get('/ordenes-servicio/create', [OrdenServicioController::class, 'create'])->name('ordenes.create');
-    Route::post('/ordenes-servicio', [OrdenServicioController::class, 'store'])->name('ordenes.store');
-    Route::get('/ordenes-servicio/{ordenes_servicio}', [OrdenServicioController::class, 'show'])->name('ordenes.show');
+    Route::get('/ordenes-servicio', [OrdenServicioController::class, 'index'])->name('ordenes-servicio.index');
+    Route::get('/ordenes-servicio/create', [OrdenServicioController::class, 'create'])->name('ordenes-servicio.create');
+    Route::post('/ordenes-servicio', [OrdenServicioController::class, 'store'])->name('ordenes-servicio.store');
+    Route::get('/ordenes-servicio/{orden_servicio}', [OrdenServicioController::class, 'show'])->name('ordenes-servicio.show');
+    
+    // Ruta para generar recibo PDF (recepcionista)
+    Route::get('/ordenes-servicio/{orden_servicio}/recibo', [OrdenServicioController::class, 'generarRecibo'])->name('ordenes-servicio.recibo');
     
     // Rutas de recursos para Servicios (solo ver para recepcionista)
     Route::get('/servicios', [ServicioController::class, 'index'])->name('servicios.index');
@@ -130,10 +133,15 @@ Route::middleware(['auth', 'admin.only'])->group(function () {
 
     // Rutas completas de recursos para admin (acceso completo CRUD)
     Route::resource('clientes', ClienteController::class);
-    Route::resource('ordenes-servicio', OrdenServicioController::class);
+    Route::resource('ordenes-servicio', OrdenServicioController::class)->parameters([
+        'ordenes-servicio' => 'orden_servicio'
+    ]);
     Route::resource('vehiculos', VehiculoController::class);
     Route::resource('servicios', ServicioController::class);
     Route::resource('piezas', PiezaController::class);
+
+    // Ruta para generar recibo PDF
+    Route::get('/ordenes-servicio/{orden_servicio}/recibo', [OrdenServicioController::class, 'generarRecibo'])->name('ordenes-servicio.recibo');
 
     // Rutas específicas para PartsTech API (solo admin)
     Route::post('/piezas/search-partstech', [PiezaController::class, 'searchPartsTech'])->name('piezas.search-partstech');
@@ -142,6 +150,11 @@ Route::middleware(['auth', 'admin.only'])->group(function () {
     
     // Las rutas de facturas ya están definidas en el grupo de recepcionista
     // y son accesibles para ambos roles (admin y recepcionista)
+});
+
+// Ruta para actualizar stock de piezas (accesible para todos los usuarios autenticados)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/piezas/{pieza}/update-stock', [PiezaController::class, 'updateStock'])->name('piezas.update-stock');
 });
 
 // Rutas para administración, protegidas por autenticación y solo para administrador

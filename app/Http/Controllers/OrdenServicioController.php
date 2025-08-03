@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\OrdenServicio;
 use App\Models\Cliente;
 use App\Models\Vehiculo;
@@ -11,6 +12,7 @@ use App\Models\Pieza;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class OrdenServicioController extends Controller
 {
@@ -48,13 +50,13 @@ class OrdenServicioController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('Store method called with data:', $request->all());
+        
         $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
             'vehiculo_id' => 'required|exists:vehiculos,id',
             'mecanico_id' => 'nullable|exists:users,id',
             'diagnostico' => 'nullable|string',
-            'servicios_realizar' => 'nullable|string',
-            'repuestos_necesarios' => 'nullable|string',
             'costo_total' => 'required|numeric|min:0',
             'estado' => 'required|in:recibido,en_proceso,finalizado,entregado',
             'servicios' => 'nullable|array',
@@ -63,6 +65,8 @@ class OrdenServicioController extends Controller
             'piezas.*.id' => 'exists:piezas,id',
             'piezas.*.cantidad' => 'integer|min:1',
         ]);
+        
+        Log::info('Validation passed successfully');
 
         DB::beginTransaction();
         
@@ -73,8 +77,6 @@ class OrdenServicioController extends Controller
                 'vehiculo_id', 
                 'mecanico_id',
                 'diagnostico',
-                'servicios_realizar',
-                'repuestos_necesarios',
                 'costo_total',
                 'estado'
             ]);
@@ -85,7 +87,48 @@ class OrdenServicioController extends Controller
 
             // Asociar servicios si se proporcionaron
             if ($request->has('servicios') && is_array($request->servicios)) {
-                $ordenServicio->servicios()->attach($request->servicios);
+                $serviciosIds = array_filter($request->servicios); // Remover valores vacíos
+                if (!empty($serviciosIds)) {
+                    $serviciosData = [];
+                    foreach ($serviciosIds as $servicioId) {
+                        $servicio = Servicio::find($servicioId);
+                        if ($servicio) {
+                            $serviciosData[$servicioId] = [
+                                'cantidad' => 1,
+                                'precio_unitario' => $servicio->precio_base,
+                                'subtotal' => $servicio->precio_base * 1,
+                            ];
+                        }
+                    }
+                    if (!empty($serviciosData)) {
+                        $ordenServicio->servicios()->attach($serviciosData);
+                    }
+                }
+            }
+
+            // Validar stock de piezas antes de procesar
+            if ($request->has('piezas') && is_array($request->piezas)) {
+                $erroresStock = [];
+                foreach ($request->piezas as $pieza) {
+                    if (isset($pieza['id']) && isset($pieza['cantidad'])) {
+                        $piezaModel = Pieza::find($pieza['id']);
+                        if ($piezaModel) {
+                            $cantidad = (int)$pieza['cantidad'];
+                            if ($piezaModel->stock <= 0) {
+                                $erroresStock[] = "La pieza '{$piezaModel->nombre}' está agotada (stock: 0)";
+                            } elseif ($piezaModel->stock < $cantidad) {
+                                $erroresStock[] = "Stock insuficiente para '{$piezaModel->nombre}'. Disponible: {$piezaModel->stock}, Requerido: {$cantidad}";
+                            }
+                        }
+                    }
+                }
+                
+                // Si hay errores de stock, cancelar la operación
+                if (!empty($erroresStock)) {
+                    DB::rollback();
+                    return back()->withInput()
+                        ->with('error', 'No se puede crear la orden debido a problemas de stock:<br>' . implode('<br>', $erroresStock));
+                }
             }
 
             // Asociar piezas con cantidades si se proporcionaron
@@ -93,21 +136,61 @@ class OrdenServicioController extends Controller
                 $piezasData = [];
                 foreach ($request->piezas as $pieza) {
                     if (isset($pieza['id']) && isset($pieza['cantidad'])) {
-                        $piezasData[$pieza['id']] = ['cantidad' => $pieza['cantidad']];
+                        $piezaModel = Pieza::find($pieza['id']);
+                        if ($piezaModel) {
+                            $cantidad = (int)$pieza['cantidad'];
+                            $piezasData[$pieza['id']] = [
+                                'cantidad' => $cantidad,
+                                'precio_unitario' => $piezaModel->precio,
+                                'subtotal' => $piezaModel->precio * $cantidad,
+                            ];
+                        }
                     }
                 }
                 if (!empty($piezasData)) {
                     $ordenServicio->piezas()->attach($piezasData);
+                    // Descontar el stock de cada pieza (ya validado previamente)
+                    foreach ($request->piezas as $pieza) {
+                        if (isset($pieza['id']) && isset($pieza['cantidad'])) {
+                            $piezaModel = Pieza::find($pieza['id']);
+                            if ($piezaModel) {
+                                $cantidad = (int)$pieza['cantidad'];
+                                $piezaModel->stock -= $cantidad;
+                                $piezaModel->save();
+                                Log::info("Stock actualizado para pieza ID {$piezaModel->id}: {$piezaModel->stock} restante");
+                            }
+                        }
+                    }
                 }
             }
 
             // Recalcular el costo total basado en servicios y piezas seleccionados
-            $costoCalculado = $ordenServicio->calcularCostoTotal();
+            $costoServicios = 0;
+            foreach ($ordenServicio->servicios as $servicio) {
+                $costoServicios += $servicio->precio_base;
+            }
+            
+            $costoPiezas = 0;
+            foreach ($ordenServicio->piezas as $pieza) {
+                $costoPiezas += $pieza->precio * $pieza->pivot->cantidad;
+            }
+            
+            $costoCalculado = $costoServicios + $costoPiezas;
             $ordenServicio->update(['costo_total' => $costoCalculado]);
 
             DB::commit();
             
-            return redirect()->route('ordenes-servicio.index')
+            Log::info('Order created successfully with ID: ' . $ordenServicio->id);
+            Log::info('User role: ' . Auth::user()->role);
+            
+            // Determinar la ruta correcta basada en el rol del usuario
+            $redirectRoute = Auth::user()->role === 'admin' 
+                ? 'ordenes-servicio.index' 
+                : 'recepcionista.ordenes-servicio.index';
+            
+            Log::info('Redirecting to route: ' . $redirectRoute);
+            
+            return redirect()->route($redirectRoute)
                 ->with('success', 'Orden de servicio creada exitosamente.');
                 
         } catch (\Exception $e) {
@@ -122,32 +205,38 @@ class OrdenServicioController extends Controller
     /**
      * Muestra los detalles de una orden de servicio específica.
      */
-    public function show(string $ordenServicio)
+    public function show(OrdenServicio $orden_servicio)
     {
-        $ordenServicio = OrdenServicio::with(['cliente', 'vehiculo', 'mecanico', 'servicios', 'piezas'])
-            ->findOrFail((int) $ordenServicio);
-        return view('ordenes-servicio.show', compact('ordenServicio'));
+        $orden_servicio->load(['cliente', 'vehiculo', 'mecanico', 'servicios', 'piezas']);
+        return view('ordenes-servicio.show', ['ordenServicio' => $orden_servicio]);
     }
 
-    /**
+        /**
      * Muestra el formulario para editar una orden de servicio existente.
      */
-    public function edit(OrdenServicio $ordenServicio)
+    public function edit(OrdenServicio $orden_servicio)
     {
-        $ordenServicio->load(['servicios', 'piezas']);
+        $orden_servicio->load(['servicios', 'piezas']);
         $clientes = Cliente::all();
         $vehiculos = Vehiculo::all();
         $mecanicos = User::all(); // Ajusta según tu lógica de roles si es necesario
         $servicios = Servicio::orderBy('nombre')->get();
         $piezas = Pieza::orderBy('nombre')->get();
         
-        return view('ordenes-servicio.edit', compact('ordenServicio', 'clientes', 'vehiculos', 'mecanicos', 'servicios', 'piezas'));
+        return view('ordenes-servicio.edit', [
+            'ordenServicio' => $orden_servicio,
+            'clientes' => $clientes,
+            'vehiculos' => $vehiculos,
+            'mecanicos' => $mecanicos,
+            'servicios' => $servicios,
+            'piezas' => $piezas
+        ]);
     }
 
     /**
      * Actualiza una orden de servicio existente en la base de datos.
      */
-    public function update(Request $request, OrdenServicio $ordenServicio)
+    public function update(Request $request, OrdenServicio $orden_servicio)
     {
         $request->validate([
             'cliente_id' => 'required|exists:clientes,id',
@@ -182,13 +271,25 @@ class OrdenServicioController extends Controller
             
             $data['pagado'] = $request->has('pagado');
             
-            $ordenServicio->update($data);
+            $orden_servicio->update($data);
 
             // Sincronizar servicios
             if ($request->has('servicios') && is_array($request->servicios)) {
-                $ordenServicio->servicios()->sync($request->servicios);
+                $serviciosIds = array_filter($request->servicios); // Remover valores vacíos
+                $serviciosData = [];
+                foreach ($serviciosIds as $servicioId) {
+                    $servicio = Servicio::find($servicioId);
+                    if ($servicio) {
+                        $serviciosData[$servicioId] = [
+                            'cantidad' => 1,
+                            'precio_unitario' => $servicio->precio_base,
+                            'subtotal' => $servicio->precio_base * 1,
+                        ];
+                    }
+                }
+                $orden_servicio->servicios()->sync($serviciosData);
             } else {
-                $ordenServicio->servicios()->sync([]);
+                $orden_servicio->servicios()->sync([]);
             }
 
             // Sincronizar piezas con cantidades
@@ -196,21 +297,49 @@ class OrdenServicioController extends Controller
                 $piezasData = [];
                 foreach ($request->piezas as $pieza) {
                     if (isset($pieza['id']) && isset($pieza['cantidad'])) {
-                        $piezasData[$pieza['id']] = ['cantidad' => $pieza['cantidad']];
+                        $piezaModel = Pieza::find($pieza['id']);
+                        if ($piezaModel) {
+                            $cantidad = (int)$pieza['cantidad'];
+                            $piezasData[$pieza['id']] = [
+                                'cantidad' => $cantidad,
+                                'precio_unitario' => $piezaModel->precio,
+                                'subtotal' => $piezaModel->precio * $cantidad,
+                            ];
+                        }
                     }
                 }
-                $ordenServicio->piezas()->sync($piezasData);
+                $orden_servicio->piezas()->sync($piezasData);
             } else {
-                $ordenServicio->piezas()->sync([]);
+                $orden_servicio->piezas()->sync([]);
             }
 
             // Recalcular el costo total basado en servicios y piezas seleccionados
-            $costoCalculado = $ordenServicio->calcularCostoTotal();
-            $ordenServicio->update(['costo_total' => $costoCalculado]);
+            $costoCalculado = 0;
+            
+            // Sumar servicios
+            $serviciosSeleccionados = $orden_servicio->servicios()->get();
+            foreach ($serviciosSeleccionados as $servicio) {
+                $costoCalculado += $servicio->precio_base;
+            }
+            
+            // Sumar piezas
+            $piezasSeleccionadas = $orden_servicio->piezas()->get();
+            foreach ($piezasSeleccionadas as $pieza) {
+                $cantidad = $pieza->pivot->cantidad ?? 1;
+                $costoCalculado += $pieza->precio * $cantidad;
+            }
+            
+            // Actualizar el costo total calculado
+            $orden_servicio->update(['costo_total' => $costoCalculado]);
 
             DB::commit();
             
-            return redirect()->route('ordenes-servicio.show', $ordenServicio)
+            // Determinar la ruta correcta basada en el rol del usuario
+            $redirectRoute = Auth::user()->role === 'admin' 
+                ? 'ordenes-servicio.index' 
+                : 'recepcionista.ordenes-servicio.index';
+            
+            return redirect()->route($redirectRoute)
                 ->with('success', 'Orden de servicio actualizada exitosamente.');
                 
         } catch (\Exception $e) {
@@ -225,29 +354,53 @@ class OrdenServicioController extends Controller
     /**
      * Elimina una orden de servicio específica de la base de datos.
      */
-    public function destroy(string $id)
+    public function destroy(OrdenServicio $orden_servicio)
     {
-        // Log muy específico para saber si el método se ejecuta
         Log::info('=== MÉTODO DESTROY EJECUTADO ===');
-        Log::info('ID recibido como string: ' . $id);
-        
+        Log::info('ID recibido: ' . $orden_servicio->id);
         try {
-            // Buscar la orden manualmente
-            $ordenServicio = OrdenServicio::findOrFail($id);
-            Log::info('Orden encontrada: ' . json_encode($ordenServicio->toArray()));
-            Log::info('Intentando eliminar orden ID: ' . $ordenServicio->id);
-            
-            $ordenServicio->delete();
+            $orden_servicio->delete();
             Log::info('Orden eliminada exitosamente');
             return redirect()->route('ordenes-servicio.index')->with('success', 'Orden de servicio eliminada exitosamente.');
-            
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            Log::error('Orden no encontrada con ID: ' . $id);
-            return redirect()->route('ordenes-servicio.index')->with('error', 'Error: No se pudo encontrar la orden de servicio.');
         } catch (\Exception $e) {
             Log::error('Error al eliminar orden: ' . $e->getMessage());
             Log::error('Trace: ' . $e->getTraceAsString());
             return redirect()->route('ordenes-servicio.index')->with('error', 'Error al eliminar la orden de servicio: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Generar recibo PDF para órdenes pagadas
+     */
+    public function generarRecibo(OrdenServicio $orden_servicio)
+    {
+        // Verificar que la orden esté pagada
+        if (!$orden_servicio->pagado) {
+            return redirect()->back()->with('error', 'Solo se pueden generar recibos para órdenes pagadas.');
+        }
+
+        // Cargar relaciones necesarias
+        $orden_servicio->load(['cliente', 'vehiculo', 'mecanico', 'servicios', 'piezas']);
+
+        // Calcular totales
+        $totalServicios = $orden_servicio->servicios->sum('precio_base');
+        $totalPiezas = $orden_servicio->piezas->sum(function($pieza) {
+            return $pieza->precio * $pieza->pivot->cantidad;
+        });
+
+        // Configurar DomPDF
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('ordenes-servicio.recibo', compact(
+            'orden_servicio', 
+            'totalServicios', 
+            'totalPiezas'
+        ));
+
+        // Configuraciones del PDF
+        $pdf->setPaper('a4', 'portrait');
+        
+        // Nombre del archivo
+        $nombreArchivo = 'recibo_orden_' . $orden_servicio->id . '_' . date('Y-m-d') . '.pdf';
+        
+        return $pdf->download($nombreArchivo);
     }
 }

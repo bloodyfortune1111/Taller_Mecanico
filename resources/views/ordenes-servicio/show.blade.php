@@ -164,10 +164,25 @@
                     </div>
 
                     <div class="flex items-center justify-end mt-6">
-                        <a href="{{ route('ordenes-servicio.edit', $ordenServicio) }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">
+                        @if($ordenServicio->pagado)
+                            <a href="{{ route('ordenes-servicio.recibo', ['orden_servicio' => $ordenServicio->id]) }}" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mr-2">
+                                <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Descargar Recibo
+                            </a>
+                        @else
+                            <button disabled class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed mr-2" title="El recibo solo está disponible para órdenes pagadas">
+                                <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                                Recibo Bloqueado
+                            </button>
+                        @endif
+                        <a href="{{ route('ordenes-servicio.edit', ['orden_servicio' => $ordenServicio->id]) }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2">
                             Editar Orden
                         </a>
-                        <form action="{{ route('ordenes-servicio.destroy', $ordenServicio) }}" method="POST" class="inline">
+                        <form action="{{ route('ordenes-servicio.destroy', ['orden_servicio' => $ordenServicio->id]) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" onclick="return confirm('¿Estás seguro de eliminar esta orden de servicio?')">

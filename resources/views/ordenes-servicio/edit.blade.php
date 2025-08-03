@@ -1,4 +1,16 @@
 <x-app-layout>
+@php
+$piezasArray = $ordenServicio->piezas
+    ? $ordenServicio->piezas->map(function($pieza) {
+        return [
+            'id' => $pieza->id,
+            'nombre' => $pieza->nombre,
+            'precio' => $pieza->precio,
+            'cantidad' => $pieza->pivot->cantidad
+        ];
+    })->values()->toArray()
+    : [];
+@endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Editar Orden de Servicio') }}
@@ -10,19 +22,36 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Editar Orden de Servicio #{{ $ordenServicio->id }}</h3>
+                    
+                    <!-- Mensaje informativo -->
+                    <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700">
+                                    <strong>Modo de Edición Limitado:</strong> Solo se pueden agregar piezas adicionales. Los demás campos están bloqueados para preservar la integridad de la orden.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
-                    <form action="{{ route('ordenes-servicio.update', $ordenServicio) }}" method="POST">
+                    <form action="{{ route('ordenes-servicio.update', ['orden_servicio' => $ordenServicio->id]) }}" method="POST">                        
                         @csrf
                         @method('PUT')
 
                         <div class="mb-4">
                             <label for="cliente_id" class="block text-sm font-medium text-gray-700">Cliente</label>
-                            <select name="cliente_id" id="cliente_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <select name="cliente_id" id="cliente_id" required disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">
                                 <option value="">Seleccione un cliente</option>
                                 @foreach($clientes as $cliente)
                                     <option value="{{ $cliente->id }}" {{ $ordenServicio->cliente_id == $cliente->id ? 'selected' : '' }}>{{ $cliente->nombre }} {{ $cliente->apellido }}</option>
                                 @endforeach
                             </select>
+                            <input type="hidden" name="cliente_id" value="{{ $ordenServicio->cliente_id }}">
                             @error('cliente_id')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -30,12 +59,13 @@
 
                         <div class="mb-4">
                             <label for="vehiculo_id" class="block text-sm font-medium text-gray-700">Vehículo</label>
-                            <select name="vehiculo_id" id="vehiculo_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <select name="vehiculo_id" id="vehiculo_id" required disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">
                                 <option value="">Seleccione un vehículo</option>
                                 @foreach($vehiculos as $vehiculo)
                                     <option value="{{ $vehiculo->id }}" {{ $ordenServicio->vehiculo_id == $vehiculo->id ? 'selected' : '' }}>{{ $vehiculo->marca }} {{ $vehiculo->modelo }} ({{ $vehiculo->matricula }})</option>
                                 @endforeach
                             </select>
+                            <input type="hidden" name="vehiculo_id" value="{{ $ordenServicio->vehiculo_id }}">
                             @error('vehiculo_id')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -43,12 +73,13 @@
 
                         <div class="mb-4">
                             <label for="mecanico_id" class="block text-sm font-medium text-gray-700">Mecánico Asignado</label>
-                            <select name="mecanico_id" id="mecanico_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <select name="mecanico_id" id="mecanico_id" disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">
                                 <option value="">Sin Asignar</option>
                                 @foreach($mecanicos as $mecanico)
                                     <option value="{{ $mecanico->id }}" {{ $ordenServicio->mecanico_id == $mecanico->id ? 'selected' : '' }}>{{ $mecanico->name }}</option>
                                 @endforeach
                             </select>
+                            <input type="hidden" name="mecanico_id" value="{{ $ordenServicio->mecanico_id }}">
                             @error('mecanico_id')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -56,7 +87,7 @@
 
                         <div class="mb-4">
                             <label for="diagnostico" class="block text-sm font-medium text-gray-700">Diagnóstico</label>
-                            <textarea name="diagnostico" id="diagnostico" rows="4" placeholder="Ingrese el diagnóstico del problema..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ $ordenServicio->diagnostico }}</textarea>
+                            <textarea name="diagnostico" id="diagnostico" rows="4" readonly placeholder="Ingrese el diagnóstico del problema..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">{{ $ordenServicio->diagnostico }}</textarea>
                             @error('diagnostico')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -64,28 +95,28 @@
 
                         <div class="mb-4">
                             <label for="descripcion_problema" class="block text-sm font-medium text-gray-700">Descripción del Problema</label>
-                            <textarea name="descripcion_problema" id="descripcion_problema" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ $ordenServicio->descripcion_problema }}</textarea>
+                            <textarea name="descripcion_problema" id="descripcion_problema" rows="4" readonly class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">{{ $ordenServicio->descripcion_problema }}</textarea>
                             @error('descripcion_problema')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <!-- Sección de Servicios -->
-                        <div class="mb-6 p-4 border border-gray-200 rounded-lg">
-                            <h4 class="text-md font-medium text-gray-800 mb-4">Servicios a Realizar</h4>
+                        <!-- Sección de Servicios (Bloqueada) -->
+                        <div class="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                            <h4 class="text-md font-medium text-gray-600 mb-4">Servicios a Realizar (Solo Lectura)</h4>
                             
                             <div class="mb-4">
-                                <label for="servicio_select" class="block text-sm font-medium text-gray-700">Agregar Servicio</label>
+                                <label for="servicio_select" class="block text-sm font-medium text-gray-500">Agregar Servicio</label>
                                 <div class="flex gap-2 mt-1">
-                                    <select id="servicio_select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <select id="servicio_select" disabled class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">
                                         <option value="">Seleccione un servicio</option>
                                         @foreach($servicios as $servicio)
-                                            <option value="{{ $servicio->id }}" data-precio="{{ $servicio->precio }}">
-                                                {{ $servicio->nombre }} - ${{ number_format($servicio->precio, 2) }}
+                                            <option value="{{ $servicio->id }}" data-precio="{{ $servicio->precio_base }}">
+                                                {{ $servicio->nombre }} - ${{ number_format($servicio->precio_base, 2) }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    <button type="button" onclick="agregarServicio()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                    <button type="button" disabled class="px-4 py-2 bg-gray-300 text-gray-500 rounded cursor-not-allowed">
                                         Agregar
                                     </button>
                                 </div>
@@ -99,8 +130,8 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="servicios_realizar" class="block text-sm font-medium text-gray-700">Descripción Adicional de Servicios</label>
-                                <textarea name="servicios_realizar" id="servicios_realizar" rows="3" placeholder="Detalles adicionales sobre los servicios..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ $ordenServicio->servicios_realizar }}</textarea>
+                                <label for="servicios_realizar" class="block text-sm font-medium text-gray-500">Descripción Adicional de Servicios</label>
+                                <textarea name="servicios_realizar" id="servicios_realizar" rows="3" readonly placeholder="Detalles adicionales sobre los servicios..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">{{ $ordenServicio->servicios_realizar }}</textarea>
                                 @error('servicios_realizar')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -117,8 +148,12 @@
                                     <select id="pieza_select" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                         <option value="">Seleccione una pieza</option>
                                         @foreach($piezas as $pieza)
-                                            <option value="{{ $pieza->id }}" data-precio="{{ $pieza->precio }}">
-                                                {{ $pieza->nombre }} - ${{ number_format($pieza->precio, 2) }}
+                                            <option value="{{ $pieza->id }}" 
+                                                    data-precio="{{ $pieza->precio }}" 
+                                                    data-stock="{{ $pieza->stock }}"
+                                                    {{ $pieza->stock <= 0 ? 'disabled' : '' }}>
+                                                {{ $pieza->nombre }} - ${{ number_format($pieza->precio, 2) }} 
+                                                (Stock: {{ $pieza->stock }}{{ $pieza->stock <= 0 ? ' - AGOTADO' : '' }})
                                             </option>
                                         @endforeach
                                     </select>
@@ -137,8 +172,8 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="repuestos_necesarios" class="block text-sm font-medium text-gray-700">Descripción Adicional de Repuestos</label>
-                                <textarea name="repuestos_necesarios" id="repuestos_necesarios" rows="3" placeholder="Detalles adicionales sobre repuestos..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">{{ $ordenServicio->repuestos_necesarios }}</textarea>
+                                <label for="repuestos_necesarios" class="block text-sm font-medium text-gray-500">Descripción Adicional de Repuestos</label>
+                                <textarea name="repuestos_necesarios" id="repuestos_necesarios" rows="3" readonly placeholder="Detalles adicionales sobre repuestos..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">{{ $ordenServicio->repuestos_necesarios }}</textarea>
                                 @error('repuestos_necesarios')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -163,13 +198,14 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="estado" class="block text-sm font-medium text-gray-700">Estado</label>
-                            <select name="estado" id="estado" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <label for="estado" class="block text-sm font-medium text-gray-500">Estado</label>
+                            <select name="estado" id="estado" required disabled class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">
                                 <option value="recibido" {{ $ordenServicio->estado == 'recibido' ? 'selected' : '' }}>Recibido</option>
                                 <option value="en_proceso" {{ $ordenServicio->estado == 'en_proceso' ? 'selected' : '' }}>En Proceso</option>
                                 <option value="finalizado" {{ $ordenServicio->estado == 'finalizado' ? 'selected' : '' }}>Finalizado</option>
                                 <option value="entregado" {{ $ordenServicio->estado == 'entregado' ? 'selected' : '' }}>Entregado</option>
                             </select>
+                            <input type="hidden" name="estado" value="{{ $ordenServicio->estado }}">
                             @error('estado')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -177,8 +213,9 @@
 
                         <div class="mb-4">
                             <div class="flex items-center">
-                                <input type="checkbox" name="pagado" id="pagado" value="1" {{ $ordenServicio->pagado ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                <label for="pagado" class="ml-2 block text-sm text-gray-900">¿Ha sido pagado?</label>
+                                <input type="checkbox" name="pagado" id="pagado" value="1" {{ $ordenServicio->pagado ? 'checked' : '' }} disabled class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 bg-gray-100">
+                                <label for="pagado" class="ml-2 block text-sm text-gray-500">¿Ha sido pagado?</label>
+                                <input type="hidden" name="pagado" value="{{ $ordenServicio->pagado ? '1' : '0' }}">
                             </div>
                             @error('pagado')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -186,7 +223,7 @@
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
-                            <a href="{{ route('ordenes-servicio.show', $ordenServicio) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-2">
+                            <a href="{{ route('ordenes-servicio.show', ['orden_servicio' => $ordenServicio->id]) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-2">
                                 Cancelar
                             </a>
                             <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
@@ -210,27 +247,20 @@
         // Inicializar con servicios y piezas existentes
         document.addEventListener('DOMContentLoaded', function() {
             // Cargar servicios existentes
-            @if($ordenServicio->servicios && $ordenServicio->servicios->count() > 0)
-                @foreach($ordenServicio->servicios as $servicio)
-                    serviciosSeleccionados.push({
-                        id: {{ $servicio->id }},
-                        nombre: "{{ $servicio->nombre }}",
-                        precio: {{ $servicio->precio }}
-                    });
-                @endforeach
-            @endif
+            serviciosSeleccionados = @json(
+                $ordenServicio->servicios
+                    ? $ordenServicio->servicios->map(function($servicio) {
+                        return [
+                            'id' => $servicio->id,
+                            'nombre' => $servicio->nombre,
+                            'precio' => $servicio->precio_base
+                        ];
+                    })->values()->toArray()
+                    : []
+            );
 
             // Cargar piezas existentes
-            @if($ordenServicio->piezas && $ordenServicio->piezas->count() > 0)
-                @foreach($ordenServicio->piezas as $pieza)
-                    piezasSeleccionadas.push({
-                        id: {{ $pieza->id }},
-                        nombre: "{{ $pieza->nombre }}",
-                        precio: {{ $pieza->precio }},
-                        cantidad: {{ $pieza->pivot->cantidad }}
-                    });
-                @endforeach
-            @endif
+            piezasSeleccionadas = @json($piezasArray);
 
             // Actualizar vistas
             actualizarListaServicios();
@@ -239,38 +269,11 @@
         });
 
         /**
-         * Agregar un servicio a la orden
+         * Agregar un servicio a la orden (DESHABILITADO)
          */
         function agregarServicio() {
-            const select = document.getElementById('servicio_select');
-            const servicioId = select.value;
-            const servicioTexto = select.options[select.selectedIndex].text;
-            const precio = parseFloat(select.options[select.selectedIndex].getAttribute('data-precio'));
-
-            if (!servicioId) {
-                alert('Por favor seleccione un servicio');
-                return;
-            }
-
-            // Verificar si ya está agregado
-            if (serviciosSeleccionados.find(s => s.id == servicioId)) {
-                alert('Este servicio ya está agregado');
-                return;
-            }
-
-            // Agregar al array
-            serviciosSeleccionados.push({
-                id: servicioId,
-                nombre: servicioTexto.split(' - ')[0],
-                precio: precio
-            });
-
-            // Actualizar vista
-            actualizarListaServicios();
-            actualizarCostoTotal();
-            
-            // Limpiar selección
-            select.value = '';
+            // Función deshabilitada - solo se permite agregar piezas
+            return false;
         }
 
         /**
@@ -282,6 +285,7 @@
             const piezaId = select.value;
             const piezaTexto = select.options[select.selectedIndex].text;
             const precio = parseFloat(select.options[select.selectedIndex].getAttribute('data-precio'));
+            const stockDisponible = parseInt(select.options[select.selectedIndex].getAttribute('data-stock'));
             const cantidad = parseInt(cantidadInput.value) || 1;
 
             if (!piezaId) {
@@ -289,16 +293,35 @@
                 return;
             }
 
-            // Verificar si ya está agregada
+            // Validar stock disponible
+            if (stockDisponible <= 0) {
+                alert('Esta pieza está agotada (stock: 0)');
+                return;
+            }
+
+            // Calcular cantidad total requerida (incluyendo lo ya seleccionado)
             const piezaExistente = piezasSeleccionadas.find(p => p.id == piezaId);
+            const cantidadYaSeleccionada = piezaExistente ? piezaExistente.cantidad : 0;
+            const cantidadTotal = cantidadYaSeleccionada + cantidad;
+
+            if (cantidadTotal > stockDisponible) {
+                alert(`Stock insuficiente. Disponible: ${stockDisponible}, Ya seleccionado: ${cantidadYaSeleccionada}, Solicitado: ${cantidad}`);
+                return;
+            }
+
+            // Verificar si ya está agregada para acumular cantidad
             if (piezaExistente) {
+                // Si ya existe, solo incrementar la cantidad
                 piezaExistente.cantidad += cantidad;
+                piezaExistente.stockDisponible = stockDisponible; // Actualizar stock disponible
             } else {
+                // Si no existe, agregar nueva pieza
                 piezasSeleccionadas.push({
                     id: piezaId,
                     nombre: piezaTexto.split(' - ')[0],
                     precio: precio,
-                    cantidad: cantidad
+                    cantidad: cantidad,
+                    stockDisponible: stockDisponible
                 });
             }
 
@@ -312,12 +335,11 @@
         }
 
         /**
-         * Eliminar un servicio
+         * Eliminar un servicio por índice (DESHABILITADO)
          */
-        function eliminarServicio(servicioId) {
-            serviciosSeleccionados = serviciosSeleccionados.filter(s => s.id != servicioId);
-            actualizarListaServicios();
-            actualizarCostoTotal();
+        function eliminarServicio(index) {
+            // Función deshabilitada - no se pueden eliminar servicios
+            return false;
         }
 
         /**
@@ -330,23 +352,20 @@
         }
 
         /**
-         * Actualizar la lista visual de servicios
+         * Actualizar la lista visual de servicios (SOLO LECTURA)
          */
         function actualizarListaServicios() {
             const container = document.getElementById('lista_servicios');
             container.innerHTML = '';
 
-            serviciosSeleccionados.forEach(servicio => {
+            serviciosSeleccionados.forEach((servicio, index) => {
                 const div = document.createElement('div');
-                div.className = 'flex justify-between items-center p-2 bg-blue-50 rounded border';
+                div.className = 'flex justify-between items-center p-2 bg-gray-100 rounded border';
                 div.innerHTML = `
-                    <span>${servicio.nombre}</span>
+                    <span class="text-gray-600">${servicio.nombre}</span>
                     <div class="flex items-center gap-2">
-                        <span class="font-medium">$${servicio.precio.toFixed(2)}</span>
-                        <button type="button" onclick="eliminarServicio(${servicio.id})" 
-                                class="text-red-600 hover:text-red-800">
-                            ×
-                        </button>
+                        <span class="font-medium text-gray-600">$${servicio.precio.toFixed(2)}</span>
+                        <span class="text-gray-400 text-sm">(Bloqueado)</span>
                     </div>
                 `;
                 container.appendChild(div);
@@ -366,8 +385,26 @@
             piezasSeleccionadas.forEach(pieza => {
                 const div = document.createElement('div');
                 div.className = 'flex justify-between items-center p-2 bg-green-50 rounded border';
+                
+                // Determinar color de advertencia si el stock es bajo
+                let colorClase = 'text-gray-600';
+                let advertencia = '';
+                if (pieza.stockDisponible !== undefined) {
+                    const stockRestante = pieza.stockDisponible - pieza.cantidad;
+                    if (stockRestante < 0) {
+                        colorClase = 'text-red-600 font-bold';
+                        advertencia = ' ⚠️ EXCEDE STOCK';
+                    } else if (stockRestante <= 2) {
+                        colorClase = 'text-orange-600';
+                        advertencia = ` (Quedarán: ${stockRestante})`;
+                    }
+                }
+                
                 div.innerHTML = `
-                    <span>${pieza.nombre} (x${pieza.cantidad})</span>
+                    <div>
+                        <span>${pieza.nombre} (x${pieza.cantidad})</span>
+                        <div class="text-xs ${colorClase}">${advertencia}</div>
+                    </div>
                     <div class="flex items-center gap-2">
                         <span class="font-medium">$${(pieza.precio * pieza.cantidad).toFixed(2)}</span>
                         <button type="button" onclick="eliminarPieza(${pieza.id})" 
@@ -430,67 +467,4 @@
             });
         }
     </script>
-</x-app-layout>
-                            </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('mecanico_id')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-input-label for="diagnostico" :value="__('Diagnóstico')" />
-                            <textarea id="diagnostico" name="diagnostico" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('diagnostico', $ordenServicio->diagnostico) }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('diagnostico')" />
-                        </div>
-                        
-                        <div class="mt-4">
-                            <x-input-label for="servicios_realizar" :value="__('Servicios a Realizar')" />
-                            <textarea id="servicios_realizar" name="servicios_realizar" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('servicios_realizar', $ordenServicio->servicios_realizar) }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('servicios_realizar')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-input-label for="repuestos_necesarios" :value="__('Repuestos Necesarios')" />
-                            <textarea id="repuestos_necesarios" name="repuestos_necesarios" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('repuestos_necesarios', $ordenServicio->repuestos_necesarios) }}</textarea>
-                            <x-input-error class="mt-2" :messages="$errors->get('repuestos_necesarios')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-input-label for="costo_total" :value="__('Costo Total')" />
-                            <x-text-input id="costo_total" name="costo_total" type="number" step="0.01" class="mt-1 block w-full" :value="old('costo_total', $ordenServicio->costo_total)" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('costo_total')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <x-input-label for="estado" :value="__('Estado')" />
-                            <select id="estado" name="estado" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                                <option value="recibido" {{ $ordenServicio->estado == 'recibido' ? 'selected' : '' }}>Recibido</option>
-                                <option value="en_proceso" {{ $ordenServicio->estado == 'en_proceso' ? 'selected' : '' }}>En Proceso</option>
-                                <option value="finalizado" {{ $ordenServicio->estado == 'finalizado' ? 'selected' : '' }}>Finalizado</option>
-                                <option value="entregado" {{ $ordenServicio->estado == 'entregado' ? 'selected' : '' }}>Entregado</option>
-                            </select>
-                            <x-input-error class="mt-2" :messages="$errors->get('estado')" />
-                        </div>
-
-                        <div class="mt-4">
-                            <div class="flex items-center">
-                                <input type="checkbox" name="pagado" id="pagado" value="1" 
-                                    {{ old('pagado', $ordenServicio->pagado ?? false) ? 'checked' : '' }} 
-                                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                <label for="pagado" class="ml-2 block text-sm text-gray-900">¿Ha sido pagado?</label>
-                            </div>
-                            <x-input-error class="mt-2" :messages="$errors->get('pagado')" />
-                        </div>
-
-                        <div class="flex items-center justify-end mt-4">
-                            <x-primary-button class="ms-4">
-                                {{ __('Actualizar Orden') }}
-                            </x-primary-button>
-                            <a href="{{ route('ordenes-servicio.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md font-semibold text-xs uppercase tracking-widest hover:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 ml-2">
-                                {{ __('Cancelar') }}
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 </x-app-layout>

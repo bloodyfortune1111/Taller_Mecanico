@@ -4,7 +4,7 @@
             {{ __('Eliminar Cuenta') }}
         </h2>
 
-        <p class="mt-2 text-sm text-gray-600">
+        <p class="mt-2 text-sm text-gray-600 background: transparent !important; text-shadow: none !important;">
             {{ __('Una vez que tu cuenta sea eliminada, todos sus recursos y datos serán eliminados permanentemente. Antes de eliminar tu cuenta, por favor descarga cualquier información que desees conservar.') }}
         </p>
     </header>
@@ -28,7 +28,7 @@
                 @method('delete')
                 
                 <div class="modal-body">
-                    <p class="text-sm text-gray-600 mb-6">
+                    <p class="text-sm text-gray-600 mb-6 backgrounsd: transparent !important; text-shadow: none !important;">
                         {{ __('Una vez que tu cuenta sea eliminada, todos sus recursos y datos serán eliminados permanentemente. Por favor ingresa tu contraseña para confirmar que deseas eliminar permanentemente tu cuenta.') }}
                     </p>
 

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\OrdenServicio;
 use App\Models\Servicio;
 use App\Models\Vehiculo;
+use App\Models\Cliente;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -17,7 +18,26 @@ class ReporteController extends Controller
      */
     public function index()
     {
-        return view('reportes.index');
+        // Calcular estadísticas generales
+        $estadisticas = [
+            'vehiculos_atendidos' => OrdenServicio::distinct('vehiculo_id')->count(),
+            'servicios_realizados' => OrdenServicio::whereIn('estado', ['finalizado', 'entregado'])->count(),
+            'ingresos_totales' => OrdenServicio::where('pagado', true)->sum('costo_total'),
+            'ordenes_este_mes' => OrdenServicio::whereMonth('created_at', Carbon::now()->month)
+                                              ->whereYear('created_at', Carbon::now()->year)
+                                              ->count(),
+            'ordenes_pendientes' => OrdenServicio::whereIn('estado', ['recibido', 'en_proceso'])->count(),
+            'servicios_activos' => Servicio::where('activo', true)->count(),
+            'clientes_activos' => DB::table('clientes')
+                                    ->whereExists(function ($query) {
+                                        $query->select(DB::raw(1))
+                                              ->from('orden_servicios')
+                                              ->whereRaw('orden_servicios.cliente_id = clientes.id');
+                                    })->count(),
+            'promedio_orden' => OrdenServicio::where('pagado', true)->avg('costo_total') ?? 0,
+        ];
+
+        return view('reportes.index', compact('estadisticas'));
     }
 
     /**
@@ -160,7 +180,9 @@ class ReporteController extends Controller
         $totalGeneral = $ingresosPorServicio->sum('total_ingresos');
 
         if ($request->has('pdf')) {
-            $pdf = PDF::loadView('reportes.ingresos-servicio-pdf', compact('ingresosPorServicio', 'fechaInicio', 'fechaFin', 'totalGeneral'));
+            // Para la vista PDF, usar el nombre de variable que espera la vista
+            $ingresos = $ingresosPorServicio;
+            $pdf = PDF::loadView('reportes.ingresos-servicio-pdf', compact('ingresos', 'fechaInicio', 'fechaFin', 'totalGeneral'));
             return $pdf->download('ingresos-por-servicio.pdf');
         }
 
